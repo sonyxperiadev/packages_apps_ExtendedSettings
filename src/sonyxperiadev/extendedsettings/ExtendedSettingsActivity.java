@@ -136,10 +136,10 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
             Process su = Runtime.getRuntime().exec("su");
             DataOutputStream outputStream = new DataOutputStream(su.getOutputStream());
 
-            outputStream.writeBytes("adbd stop\n");
+            outputStream.writeBytes("stop adbd\n");
             outputStream.flush();
 
-            outputStream.writeBytes("adbd start\n");
+            outputStream.writeBytes("start adbd\n");
             outputStream.flush();
 
             outputStream.writeBytes("exit\n");
