@@ -12,11 +12,13 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.util.Log;
-
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
 /**
@@ -32,6 +34,7 @@ import java.nio.charset.Charset;
  */
 public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
 
+    private static String TAG = "ExtendedSettings";
     private static FragmentManager mFragmentManager;
     protected static AppCompatPreferenceActivity mActivity;
 
@@ -42,6 +45,18 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
     private static Preference.OnPreferenceChangeListener mPreferenceListener = new Preference.OnPreferenceChangeListener() {
         @Override
         public boolean onPreferenceChange(Preference preference, Object value) {
+            switch (preference.getKey()) {
+                case "adbon_switch":
+                    if ((Boolean) value) {
+                        confirmEnablingADBON();
+                    } else {
+                        setSystemProperty("service.adb.tcp.port", "-1");
+                        restartADBD();
+                    }
+                    break;
+                default:
+                    break;
+            }
             return true;
         }
     };
@@ -61,6 +76,7 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         setupActionBar();
         mActivity = this;
         addPreferencesFromResource(R.xml.pref_general);
+        findPreference("adbon_switch").setOnPreferenceChangeListener(mPreferenceListener);
         mFragmentManager = getFragmentManager();
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -97,14 +113,45 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
 
     private static String getSystemProperty(String key) {
         String value = null;
-
         try {
             value = (String) Class.forName("android.os.SystemProperties")
                     .getMethod("get", String.class).invoke(null, key);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return value;
+    }
+
+    protected static void setSystemProperty(String key, String value) {
+        try {
+            Class.forName("android.os.SystemProperties")
+                    .getMethod("set", String.class, String.class).invoke(null, key, value);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected static void restartADBD(){
+        try{
+            Process su = Runtime.getRuntime().exec("su");
+            DataOutputStream outputStream = new DataOutputStream(su.getOutputStream());
+
+            outputStream.writeBytes("adbd stop\n");
+            outputStream.flush();
+
+            outputStream.writeBytes("adbd start\n");
+            outputStream.flush();
+
+            outputStream.writeBytes("exit\n");
+            outputStream.flush();
+            su.waitFor();
+        }catch(IOException | InterruptedException e){
+            Log.e(TAG, e.getMessage());
+        }
+    }
+
+    private static void confirmEnablingADBON() {
+        DialogFragment newFragment = new EnableADBONDialog();
+        newFragment.show(mFragmentManager, "missiles");
     }
 }
