@@ -85,9 +85,8 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         SharedPreferences.Editor editor = preferences.edit();
 
         String adbN = getSystemProperty(PREF_ADB_NETWORK_READ);
-        if (adbN != null) {
-            editor.putBoolean("adbon_switch", Integer.getInteger(adbN) > 0);
-        }
+
+        editor.putBoolean("adbon_switch", isNumeric(adbN) && (Integer.getInteger(adbN) > 0));
         updateADBSummary();
         editor.apply();
     }
@@ -147,7 +146,7 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
     protected static void updateADBSummary() {
         String mADBPort = getSystemProperty(PREF_ADB_NETWORK_READ);
         boolean enabled;
-        enabled = mADBPort != null && (Integer.getInteger(mADBPort) > 0);
+        enabled = isNumeric(mADBPort) && (Integer.getInteger(mADBPort) > 0);
         SwitchPreference mAdbOverNetwork = (SwitchPreference) ExtendedSettingsActivity.mActivity.findPreference("adbon_switch");
 
         if (enabled) {
@@ -182,5 +181,14 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         } else {
             mAdbOverNetwork.setSummary(R.string.pref_description_adbonswitch);
         }
+    }
+
+    public static boolean isNumeric(String str) {
+        try {
+            double d = Double.parseDouble(str);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+        return true;
     }
 }
