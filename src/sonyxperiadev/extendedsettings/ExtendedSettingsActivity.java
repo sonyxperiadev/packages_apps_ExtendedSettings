@@ -86,7 +86,7 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
 
         String adbN = getSystemProperty(PREF_ADB_NETWORK_READ);
         if (adbN != null) {
-            editor.putBoolean("adbon_switch", !adbN.equals("-1"));
+            editor.putBoolean("adbon_switch", Integer.getInteger(adbN) > 0);
         }
         updateADBSummary();
         editor.apply();
@@ -145,7 +145,9 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
     }
 
     protected static void updateADBSummary() {
-        boolean enabled = !getSystemProperty(PREF_ADB_NETWORK_READ).equals("-1");
+        String mADBPort = getSystemProperty(PREF_ADB_NETWORK_READ);
+        boolean enabled;
+        enabled = mADBPort != null && (Integer.getInteger(mADBPort) > 0);
         SwitchPreference mAdbOverNetwork = (SwitchPreference) ExtendedSettingsActivity.mActivity.findPreference("adbon_switch");
 
         if (enabled) {
@@ -167,7 +169,7 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
                 ipAddressString = null;
             }
             if (ipAddressString != null) {
-                mAdbOverNetwork.setSummary(ipAddressString ":" getSystemProperty(PREF_ADB_NETWORK_READ));
+                mAdbOverNetwork.setSummary(ipAddressString + ":" + mADBPort);
             } else {
                 mAdbOverNetwork.setSummary(R.string.error_connect_to_wifi);
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mActivity);
