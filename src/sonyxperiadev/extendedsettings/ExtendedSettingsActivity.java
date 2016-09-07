@@ -5,10 +5,8 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
@@ -86,7 +84,7 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
 
         String adbN = getSystemProperty(PREF_ADB_NETWORK_READ);
 
-        editor.putBoolean("adbon_switch", isNumeric(adbN) && (Integer.getInteger(adbN) > 0));
+        editor.putBoolean("adbon_switch", isNumeric(adbN) && (Integer.parseInt(adbN) > 0));
         updateADBSummary();
         editor.apply();
     }
@@ -146,7 +144,7 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
     protected static void updateADBSummary() {
         String mADBPort = getSystemProperty(PREF_ADB_NETWORK_READ);
         boolean enabled;
-        enabled = isNumeric(mADBPort) && (Integer.getInteger(mADBPort) > 0);
+        enabled = isNumeric(mADBPort) && (Integer.parseInt(mADBPort) > 0);
         SwitchPreference mAdbOverNetwork = (SwitchPreference) ExtendedSettingsActivity.mActivity.findPreference("adbon_switch");
 
         if (enabled) {
