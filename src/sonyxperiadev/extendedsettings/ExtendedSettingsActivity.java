@@ -1,42 +1,38 @@
 package sonyxperiadev.extendedsettings;
 
-
-import android.annotation.TargetApi;
+import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.content.Context;
-import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
-import android.preference.RingtonePreference;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.MenuItem;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.List;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
  * handset devices, settings are presented as a single list. On tablets,
  * settings are split by category, with category headers shown to the left of
  * the list of settings.
- * <p>
+ * <p/>
  * See <a href="http://developer.android.com/design/patterns/settings.html">
  * Android Design: Settings</a> for design guidelines and the <a
  * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
  * API Guide</a> for more information on developing a Settings UI.
  */
 public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
+
+    private static FragmentManager mFragmentManager;
 
     /**
      * A preference value change listener that updates the preference's summary
@@ -63,6 +59,11 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         super.onCreate(savedInstanceState);
         setupActionBar();
         addPreferencesFromResource(R.xml.pref_general);
+        mFragmentManager = getFragmentManager();
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.apply();
     }
 
     /**
@@ -90,5 +91,18 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
      */
     protected boolean isValidFragment(String fragmentName) {
         return PreferenceFragment.class.getName().equals(fragmentName);
+    }
+
+    private static String getSystemProperty(String key) {
+        String value = null;
+
+        try {
+            value = (String) Class.forName("android.os.SystemProperties")
+                    .getMethod("get", String.class).invoke(null, key);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return value;
     }
 }
