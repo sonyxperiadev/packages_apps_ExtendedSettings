@@ -85,6 +85,9 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         String adbN = getSystemProperty(PREF_ADB_NETWORK_READ);
 
         editor.putBoolean("adbon_switch", isNumeric(adbN) && (Integer.parseInt(adbN) > 0));
+        SwitchPreference adbon = (SwitchPreference) findPreference("adbon_switch");
+        // Set the switch state accordingly to the Preference
+        adbon.setEnabled(isNumeric(adbN) && (Integer.parseInt(adbN) > 0));
         updateADBSummary();
         editor.apply();
     }
