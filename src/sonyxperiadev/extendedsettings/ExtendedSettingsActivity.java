@@ -32,9 +32,12 @@ import java.nio.ByteOrder;
  */
 public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
 
-    private static String TAG = "ExtendedSettings";
-    protected static String PREF_ADB_NETWORK_COM = "adb.network.port";
-    private static String PREF_ADB_NETWORK_READ = "service.adb.tcp.port";
+    private static final String TAG = "ExtendedSettings";
+    protected static final String PREF_8MP_23MP_ENABLED = "persist.camera.8mp.config";
+    protected static final String PREF_ADB_NETWORK_COM = "adb.network.port";
+    private static final String PREF_ADB_NETWORK_READ = "service.adb.tcp.port";
+    protected static final String m8MPSwitchPref = "8mp_switch";
+    protected static final String ADBOverNetworkSwitchPref = "adbon_switch";
     private static FragmentManager mFragmentManager;
     protected static AppCompatPreferenceActivity mActivity;
 
@@ -46,7 +49,10 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         @Override
         public boolean onPreferenceChange(Preference preference, Object value) {
             switch (preference.getKey()) {
-                case "adbon_switch":
+                case m8MPSwitchPref:
+                        setSystemProperty(PREF_8MP_23MP_ENABLED, (Boolean) value ? "true" : "false");
+                    break;
+                case ADBOverNetworkSwitchPref:
                     if ((Boolean) value) {
                         confirmEnablingADBON();
                     } else {
@@ -76,18 +82,28 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         setupActionBar();
         mActivity = this;
         addPreferencesFromResource(R.xml.pref_general);
-        findPreference("adbon_switch").setOnPreferenceChangeListener(mPreferenceListener);
+
+        findPreference(m8MPSwitchPref).setOnPreferenceChangeListener(mPreferenceListener);
+        findPreference(ADBOverNetworkSwitchPref).setOnPreferenceChangeListener(mPreferenceListener);
         mFragmentManager = getFragmentManager();
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = preferences.edit();
 
+        String m8MPSwitch = getSystemProperty(PREF_8MP_23MP_ENABLED);
         String adbN = getSystemProperty(PREF_ADB_NETWORK_READ);
 
+        if (m8MPSwitch != null && !m8MPSwitch.equals("")) {
+            editor.putBoolean(m8MPSwitchPref, m8MPSwitch.equals("true"));
+            SwitchPreference m8mp_switch = (SwitchPreference) findPreference(m8MPSwitchPref);
+            // Set the switch state accordingly to the Preference
+            m8mp_switch.setChecked(Boolean.valueOf(m8MPSwitch));
+        } else {
+            getPreferenceScreen().removePreference(findPreference(m8MPSwitchPref));
+        }
         boolean adbNB = isNumeric(adbN) && (Integer.parseInt(adbN) > 0);
-        editor.putBoolean("adbon_switch", adbNB);
-
-        SwitchPreference adbon = (SwitchPreference) findPreference("adbon_switch");
+        editor.putBoolean(ADBOverNetworkSwitchPref, adbNB);
+        SwitchPreference adbon = (SwitchPreference) findPreference(ADBOverNetworkSwitchPref);
         // Set the switch state accordingly to the Preference
         adbon.setChecked(adbNB);
         updateADBSummary(adbNB);
@@ -148,7 +164,7 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
 
     protected static void updateADBSummary(boolean enabled) {
 
-        SwitchPreference mAdbOverNetwork = (SwitchPreference) ExtendedSettingsActivity.mActivity.findPreference("adbon_switch");
+        SwitchPreference mAdbOverNetwork = (SwitchPreference) ExtendedSettingsActivity.mActivity.findPreference(ADBOverNetworkSwitchPref);
 
         if (enabled) {
             WifiManager wifiManager = (WifiManager) mActivity.getSystemService(WIFI_SERVICE);
@@ -174,7 +190,7 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
                 mAdbOverNetwork.setSummary(R.string.error_connect_to_wifi);
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mActivity);
                 SharedPreferences.Editor editor = preferences.edit();
-                editor.putBoolean("adbon_switch", false);
+                editor.putBoolean(ADBOverNetworkSwitchPref, false);
                 editor.apply();
                 setSystemProperty(PREF_ADB_NETWORK_COM, "-1");
                 mAdbOverNetwork.setChecked(false);

@@ -24,5 +24,6 @@
                 android:name="com.android.settings.icon"
                 android:resource="@drawable/ic_extended_settings" />
         </activity>
+
     </application>
 </manifest>

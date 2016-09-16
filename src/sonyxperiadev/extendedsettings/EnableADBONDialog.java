@@ -28,7 +28,7 @@ public class EnableADBONDialog extends DialogFragment {
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         SwitchPreference mSwitch = (SwitchPreference)
-                                ExtendedSettingsActivity.mActivity.findPreference("adbon_switch");
+                                ExtendedSettingsActivity.mActivity.findPreference(ExtendedSettingsActivity.ADBOverNetworkSwitchPref);
                         mSwitch.setChecked(false);
                         ExtendedSettingsActivity.updateADBSummary(false);
                     }
