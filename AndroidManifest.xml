@@ -3,6 +3,8 @@
     package="sonyxperiadev.extendedsettings"
     android:sharedUserId="android.uid.system">
 
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
     <application
         android:allowBackup="true"
         android:label="@string/app_name"

@@ -5,21 +5,21 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.preference.SwitchPreference;
 import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.util.Log;
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
+import java.math.BigInteger;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.nio.ByteOrder;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -34,7 +34,9 @@ import java.nio.charset.Charset;
  */
 public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
 
-    protected static String PREF_ADB_NETWORK = "adb.network.port";
+    private static String TAG = "ExtendedSettings";
+    protected static String PREF_ADB_NETWORK_COM = "adb.network.port";
+    private static String PREF_ADB_NETWORK_READ = "service.adb.tcp.port";
     private static FragmentManager mFragmentManager;
     protected static AppCompatPreferenceActivity mActivity;
 
@@ -50,8 +52,8 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
                     if ((Boolean) value) {
                         confirmEnablingADBON();
                     } else {
-                        setSystemProperty(PREF_ADB_NETWORK, "-1");
-                        /*restartADBD();*/
+                        setSystemProperty(PREF_ADB_NETWORK_COM, "-1");
+                        updateADBSummary();
                     }
                     break;
                 default:
@@ -82,9 +84,11 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = preferences.edit();
 
-        String adbN = getSystemProperty(PREF_ADB_NETWORK);
-        if (adbN != null)
-            editor.putBoolean("adbon_switch", adbN.equals("5555"));
+        String adbN = getSystemProperty(PREF_ADB_NETWORK_READ);
+        if (adbN != null) {
+            editor.putBoolean("adbon_switch", !adbN.equals("-1"));
+        }
+        updateADBSummary();
         editor.apply();
     }
 
@@ -115,7 +119,7 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         return PreferenceFragment.class.getName().equals(fragmentName);
     }
 
-    private static String getSystemProperty(String key) {
+    protected static String getSystemProperty(String key) {
         String value = null;
         try {
             value = (String) Class.forName("android.os.SystemProperties")
@@ -138,5 +142,43 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
     private static void confirmEnablingADBON() {
         DialogFragment newFragment = new EnableADBONDialog();
         newFragment.show(mFragmentManager, "adb");
+    }
+
+    protected static void updateADBSummary() {
+        boolean enabled = !getSystemProperty(PREF_ADB_NETWORK_READ).equals("-1");
+        SwitchPreference mAdbOverNetwork = (SwitchPreference) ExtendedSettingsActivity.mActivity.findPreference("adbon_switch");
+
+        if (enabled) {
+            WifiManager wifiManager = (WifiManager) mActivity.getSystemService(WIFI_SERVICE);
+            int ipAddress = wifiManager.getConnectionInfo().getIpAddress();
+
+            // Convert little-endian to big-endianif needed
+            if (ByteOrder.nativeOrder().equals(ByteOrder.LITTLE_ENDIAN)) {
+                ipAddress = Integer.reverseBytes(ipAddress);
+            }
+
+            byte[] ipByteArray = BigInteger.valueOf(ipAddress).toByteArray();
+
+            String ipAddressString;
+            try {
+                ipAddressString = InetAddress.getByAddress(ipByteArray).getHostAddress();
+            } catch (UnknownHostException ex) {
+                Log.e("WIFIIP", "Unable to get host address.");
+                ipAddressString = null;
+            }
+            if (ipAddressString != null) {
+                mAdbOverNetwork.setSummary(ipAddressString ":" getSystemProperty(PREF_ADB_NETWORK_READ));
+            } else {
+                mAdbOverNetwork.setSummary(R.string.error_connect_to_wifi);
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mActivity);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putBoolean("adbon_switch", false);
+                editor.apply();
+                setSystemProperty(PREF_ADB_NETWORK_COM, "-1");
+                mAdbOverNetwork.setChecked(false);
+            }
+        } else {
+            mAdbOverNetwork.setSummary(R.string.pref_description_adbonswitch);
+        }
     }
 }

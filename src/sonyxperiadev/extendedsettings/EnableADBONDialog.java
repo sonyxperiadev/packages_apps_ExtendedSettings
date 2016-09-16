@@ -21,7 +21,8 @@ public class EnableADBONDialog extends DialogFragment {
                 .setTitle(R.string.pref_title_adbonswitch)
                 .setPositiveButton(R.string.enable, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        ExtendedSettingsActivity.setSystemProperty(ExtendedSettingsActivity.PREF_ADB_NETWORK, "5555");
+                        ExtendedSettingsActivity.setSystemProperty(ExtendedSettingsActivity.PREF_ADB_NETWORK_COM, "5555");
+                        ExtendedSettingsActivity.updateADBSummary();
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -29,6 +30,7 @@ public class EnableADBONDialog extends DialogFragment {
                         SwitchPreference mSwitch = (SwitchPreference)
                                 ExtendedSettingsActivity.mActivity.findPreference("adbon_switch");
                         mSwitch.setChecked(false);
+                        ExtendedSettingsActivity.updateADBSummary();
                     }
                 });
         // Create the AlertDialog object and return it
