@@ -50,7 +50,8 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         public boolean onPreferenceChange(Preference preference, Object value) {
             switch (preference.getKey()) {
                 case m8MPSwitchPref:
-                        setSystemProperty(PREF_8MP_23MP_ENABLED, (Boolean) value ? "true" : "false");
+                    setSystemProperty(PREF_8MP_23MP_ENABLED, (Boolean) value ? "true" : "false");
+                    confirm8MPChange();
                     break;
                 case ADBOverNetworkSwitchPref:
                     if ((Boolean) value) {
@@ -160,6 +161,11 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
     private static void confirmEnablingADBON() {
         DialogFragment newFragment = new EnableADBONDialog();
         newFragment.show(mFragmentManager, "adb");
+    }
+
+    private static void confirm8MPChange() {
+        DialogFragment newFragment = new confirm8MPChangeDialog();
+        newFragment.show(mFragmentManager, "8mp");
     }
 
     protected static void updateADBSummary(boolean enabled) {

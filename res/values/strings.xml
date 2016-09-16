@@ -8,6 +8,10 @@
     <string name="error_connect_to_wifi">Error: You need to be connected to a WiFi!</string>
     <string name="pref_description_8mp">Use the 8MP camera mode for higher FPS and better nightmode picture quality. Disable to use the 23MP mode.</string>
     <string name="pref_title_8mp">Enable 8MP mode</string>
+    <string name="dialog_8mp_change">Change 8/23 MP Mode</string>
+    <string name="dialog_8mp_reboot_required">A reboot is required for the changes to take effect!</string>
+    <string name="reboot_now">Reboot now</string>
+    <string name="reboot_later">Reboot later</string>
     <string name="enable">Enable</string>
     <string name="cancel">Cancel</string>
 

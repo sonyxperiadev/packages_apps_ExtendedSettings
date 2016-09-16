@@ -19,6 +19,7 @@ public class EnableADBONDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage(R.string.pref_description_adbonswitchdialog)
                 .setTitle(R.string.pref_title_adbonswitch)
+                .setCancelable(false)
                 .setPositiveButton(R.string.enable, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         ExtendedSettingsActivity.setSystemProperty(ExtendedSettingsActivity.PREF_ADB_NETWORK_COM, "5555");
