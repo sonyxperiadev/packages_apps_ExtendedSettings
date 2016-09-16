@@ -7,6 +7,12 @@
         android:title="@string/pref_title_8mp" />
 
     <SwitchPreference
+        android:defaultValue="true"
+        android:key="alt_act_switch"
+        android:summary="@string/pref_description_alt_act"
+        android:title="@string/pref_title_alt_act" />
+
+    <SwitchPreference
         android:defaultValue="false"
         android:key="adbon_switch"
         android:summary="@string/pref_description_adbonswitch"

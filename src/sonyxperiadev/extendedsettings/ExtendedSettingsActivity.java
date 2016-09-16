@@ -36,10 +36,13 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
     protected static final String PREF_8MP_23MP_ENABLED = "persist.camera.8mp.config";
     protected static final String PREF_ADB_NETWORK_COM = "adb.network.port";
     private static final String PREF_ADB_NETWORK_READ = "service.adb.tcp.port";
-    protected static final String m8MPSwitchPref = "8mp_switch";
-    protected static final String ADBOverNetworkSwitchPref = "adbon_switch";
+    private static final String PREF_CAMERA_ALT_ACT = "persist.camera.alt.act";
+    private static final String m8MPSwitchPref = "8mp_switch";
+    private static final String mCameraAltAct = "alt_act_switch";
+    protected static final String mADBOverNetworkSwitchPref = "adbon_switch";
     private static FragmentManager mFragmentManager;
     protected static AppCompatPreferenceActivity mActivity;
+    private SharedPreferences.Editor mPrefEditor;
 
     /**
      * A preference value change listener that updates the preference's summary
@@ -51,9 +54,13 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
             switch (preference.getKey()) {
                 case m8MPSwitchPref:
                     setSystemProperty(PREF_8MP_23MP_ENABLED, (Boolean) value ? "true" : "false");
-                    confirm8MPChange();
+                    confirmRebootChange();
                     break;
-                case ADBOverNetworkSwitchPref:
+                case mCameraAltAct:
+                    setSystemProperty(PREF_CAMERA_ALT_ACT, (Boolean) value ? "true" : "false");
+                    confirmRebootChange();
+                    break;
+                case mADBOverNetworkSwitchPref:
                     if ((Boolean) value) {
                         confirmEnablingADBON();
                     } else {
@@ -85,30 +92,22 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         addPreferencesFromResource(R.xml.pref_general);
 
         findPreference(m8MPSwitchPref).setOnPreferenceChangeListener(mPreferenceListener);
-        findPreference(ADBOverNetworkSwitchPref).setOnPreferenceChangeListener(mPreferenceListener);
+        findPreference(mCameraAltAct).setOnPreferenceChangeListener(mPreferenceListener);
+        findPreference(mADBOverNetworkSwitchPref).setOnPreferenceChangeListener(mPreferenceListener);
         mFragmentManager = getFragmentManager();
+        mPrefEditor = PreferenceManager.getDefaultSharedPreferences(this).edit();
 
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = preferences.edit();
+        loadPref(m8MPSwitchPref);
+        loadPref(mCameraAltAct);
 
-        String m8MPSwitch = getSystemProperty(PREF_8MP_23MP_ENABLED);
         String adbN = getSystemProperty(PREF_ADB_NETWORK_READ);
-
-        if (m8MPSwitch != null && !m8MPSwitch.equals("")) {
-            editor.putBoolean(m8MPSwitchPref, m8MPSwitch.equals("true"));
-            SwitchPreference m8mp_switch = (SwitchPreference) findPreference(m8MPSwitchPref);
-            // Set the switch state accordingly to the Preference
-            m8mp_switch.setChecked(Boolean.valueOf(m8MPSwitch));
-        } else {
-            getPreferenceScreen().removePreference(findPreference(m8MPSwitchPref));
-        }
         boolean adbNB = isNumeric(adbN) && (Integer.parseInt(adbN) > 0);
-        editor.putBoolean(ADBOverNetworkSwitchPref, adbNB);
-        SwitchPreference adbon = (SwitchPreference) findPreference(ADBOverNetworkSwitchPref);
+        mPrefEditor.putBoolean(mADBOverNetworkSwitchPref, adbNB);
+        SwitchPreference adbon = (SwitchPreference) findPreference(mADBOverNetworkSwitchPref);
         // Set the switch state accordingly to the Preference
         adbon.setChecked(adbNB);
         updateADBSummary(adbNB);
-        editor.apply();
+        mPrefEditor.apply();
     }
 
     /**
@@ -163,14 +162,14 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         newFragment.show(mFragmentManager, "adb");
     }
 
-    private static void confirm8MPChange() {
-        DialogFragment newFragment = new confirm8MPChangeDialog();
+    private static void confirmRebootChange() {
+        DialogFragment newFragment = new confirmRebootChangeDialog();
         newFragment.show(mFragmentManager, "8mp");
     }
 
     protected static void updateADBSummary(boolean enabled) {
 
-        SwitchPreference mAdbOverNetwork = (SwitchPreference) ExtendedSettingsActivity.mActivity.findPreference(ADBOverNetworkSwitchPref);
+        SwitchPreference mAdbOverNetwork = (SwitchPreference) ExtendedSettingsActivity.mActivity.findPreference(mADBOverNetworkSwitchPref);
 
         if (enabled) {
             WifiManager wifiManager = (WifiManager) mActivity.getSystemService(WIFI_SERVICE);
@@ -196,7 +195,7 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
                 mAdbOverNetwork.setSummary(R.string.error_connect_to_wifi);
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mActivity);
                 SharedPreferences.Editor editor = preferences.edit();
-                editor.putBoolean(ADBOverNetworkSwitchPref, false);
+                editor.putBoolean(mADBOverNetworkSwitchPref, false);
                 editor.apply();
                 setSystemProperty(PREF_ADB_NETWORK_COM, "-1");
                 mAdbOverNetwork.setChecked(false);
@@ -206,12 +205,24 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         }
     }
 
-    public static boolean isNumeric(String str) {
+    private static boolean isNumeric(String str) {
         try {
             double d = Double.parseDouble(str);
         } catch (NumberFormatException nfe) {
             return false;
         }
         return true;
+    }
+
+    private void loadPref(String pref) {
+        String pref_st = getSystemProperty(pref);
+        if (pref_st != null && !pref_st.equals("")) {
+            mPrefEditor.putBoolean(pref, pref_st.equals("true"));
+            SwitchPreference pref_sw = (SwitchPreference) findPreference(pref);
+            // Set the switch state accordingly to the Preference
+            pref_sw.setChecked(Boolean.valueOf(pref_st));
+        } else {
+            getPreferenceScreen().removePreference(findPreference(pref));
+        }
     }
 }

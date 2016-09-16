@@ -13,13 +13,13 @@ import android.os.PowerManager;
  * Dialog changing 8MP Mode
  * Base on Googles fire missile dialog
  */
-public class confirm8MPChangeDialog extends DialogFragment {
+public class confirmRebootChangeDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(R.string.dialog_8mp_reboot_required)
-                .setTitle(R.string.dialog_8mp_change)
+        builder.setMessage(R.string.dialog_reboot_required_summary)
+                .setTitle(R.string.dialog_reboot_required)
                 .setCancelable(false)
                 .setPositiveButton(R.string.reboot_now, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
