@@ -33,6 +33,7 @@ import java.nio.charset.Charset;
 public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
 
     private static FragmentManager mFragmentManager;
+    protected static AppCompatPreferenceActivity mActivity;
 
     /**
      * A preference value change listener that updates the preference's summary
@@ -58,6 +59,7 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupActionBar();
+        mActivity = this;
         addPreferencesFromResource(R.xml.pref_general);
         mFragmentManager = getFragmentManager();
 
