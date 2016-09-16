@@ -51,7 +51,7 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
                         confirmEnablingADBON();
                     } else {
                         setSystemProperty(PREF_ADB_NETWORK_COM, "-1");
-                        updateADBSummary();
+                        updateADBSummary(false);
                     }
                     break;
                 default:
@@ -84,11 +84,13 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
 
         String adbN = getSystemProperty(PREF_ADB_NETWORK_READ);
 
-        editor.putBoolean("adbon_switch", isNumeric(adbN) && (Integer.parseInt(adbN) > 0));
+        boolean adbNB = isNumeric(adbN) && (Integer.parseInt(adbN) > 0);
+        editor.putBoolean("adbon_switch", adbNB);
+
         SwitchPreference adbon = (SwitchPreference) findPreference("adbon_switch");
         // Set the switch state accordingly to the Preference
-        adbon.setEnabled(isNumeric(adbN) && (Integer.parseInt(adbN) > 0));
-        updateADBSummary();
+        adbon.setChecked(adbNB);
+        updateADBSummary(adbNB);
         editor.apply();
     }
 
@@ -144,10 +146,8 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         newFragment.show(mFragmentManager, "adb");
     }
 
-    protected static void updateADBSummary() {
-        String mADBPort = getSystemProperty(PREF_ADB_NETWORK_READ);
-        boolean enabled;
-        enabled = isNumeric(mADBPort) && (Integer.parseInt(mADBPort) > 0);
+    protected static void updateADBSummary(boolean enabled) {
+
         SwitchPreference mAdbOverNetwork = (SwitchPreference) ExtendedSettingsActivity.mActivity.findPreference("adbon_switch");
 
         if (enabled) {
@@ -169,7 +169,7 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
                 ipAddressString = null;
             }
             if (ipAddressString != null) {
-                mAdbOverNetwork.setSummary(ipAddressString + ":" + mADBPort);
+                mAdbOverNetwork.setSummary(ipAddressString + ":" + getSystemProperty(PREF_ADB_NETWORK_READ));
             } else {
                 mAdbOverNetwork.setSummary(R.string.error_connect_to_wifi);
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mActivity);
