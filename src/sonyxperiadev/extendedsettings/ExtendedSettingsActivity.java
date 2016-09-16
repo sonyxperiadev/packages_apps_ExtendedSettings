@@ -34,7 +34,7 @@ import java.nio.charset.Charset;
  */
 public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
 
-    private static String TAG = "ExtendedSettings";
+    protected static String PREF_ADB_NETWORK = "adb.network.port";
     private static FragmentManager mFragmentManager;
     protected static AppCompatPreferenceActivity mActivity;
 
@@ -50,8 +50,8 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
                     if ((Boolean) value) {
                         confirmEnablingADBON();
                     } else {
-                        setSystemProperty("service.adb.tcp.port", "-1");
-                        restartADBD();
+                        setSystemProperty(PREF_ADB_NETWORK, "-1");
+                        /*restartADBD();*/
                     }
                     break;
                 default:
@@ -81,6 +81,10 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = preferences.edit();
+
+        String adbN = getSystemProperty(PREF_ADB_NETWORK);
+        if (adbN != null)
+            editor.putBoolean("adbon_switch", adbN.equals("5555"));
         editor.apply();
     }
 
@@ -131,27 +135,8 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         }
     }
 
-    protected static void restartADBD(){
-        try{
-            Process su = Runtime.getRuntime().exec("su");
-            DataOutputStream outputStream = new DataOutputStream(su.getOutputStream());
-
-            outputStream.writeBytes("stop adbd\n");
-            outputStream.flush();
-
-            outputStream.writeBytes("start adbd\n");
-            outputStream.flush();
-
-            outputStream.writeBytes("exit\n");
-            outputStream.flush();
-            su.waitFor();
-        }catch(IOException | InterruptedException e){
-            Log.e(TAG, e.getMessage());
-        }
-    }
-
     private static void confirmEnablingADBON() {
         DialogFragment newFragment = new EnableADBONDialog();
-        newFragment.show(mFragmentManager, "missiles");
+        newFragment.show(mFragmentManager, "adb");
     }
 }
