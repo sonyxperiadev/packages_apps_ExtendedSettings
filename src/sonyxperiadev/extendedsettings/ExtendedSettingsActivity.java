@@ -97,8 +97,8 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         mFragmentManager = getFragmentManager();
         mPrefEditor = PreferenceManager.getDefaultSharedPreferences(this).edit();
 
-        loadPref(m8MPSwitchPref);
-        loadPref(mCameraAltAct);
+        loadPref(m8MPSwitchPref, PREF_8MP_23MP_ENABLED);
+        loadPref(mCameraAltAct, PREF_CAMERA_ALT_ACT);
 
         String adbN = getSystemProperty(PREF_ADB_NETWORK_READ);
         boolean adbNB = isNumeric(adbN) && (Integer.parseInt(adbN) > 0);
@@ -214,8 +214,8 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         return true;
     }
 
-    private void loadPref(String pref) {
-        String pref_st = getSystemProperty(pref);
+    private void loadPref(String pref, String key) {
+        String pref_st = getSystemProperty(key);
         if (pref_st != null && !pref_st.equals("")) {
             mPrefEditor.putBoolean(pref, pref_st.equals("true"));
             SwitchPreference pref_sw = (SwitchPreference) findPreference(pref);
