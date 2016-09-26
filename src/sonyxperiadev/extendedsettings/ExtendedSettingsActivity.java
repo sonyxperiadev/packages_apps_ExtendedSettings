@@ -14,6 +14,7 @@ import android.preference.SwitchPreference;
 import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.util.Log;
+import android.view.MenuItem;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -223,6 +224,17 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
             pref_sw.setChecked(Boolean.valueOf(pref_st));
         } else {
             getPreferenceScreen().removePreference(findPreference(pref));
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 }
