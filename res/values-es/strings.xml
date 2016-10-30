@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Configuraciones Avanzadas</string>
+
+    <!-- Strings related to Settings -->
+    <string name="pref_description_adbonswitch">Activar la depuración TCP/IP sobre las interfaces de red (Wi\u2011Fi, redes USB). Esta configuración se restablece al reiniciar el dispositivo</string>
+    <string name="pref_description_adbonswitchdialog">ADVERTENCIA: Cuando ADB sobre red está activado, el dispositivo está abierto para intrusiones en todas las redes conectadas.\n\nUtiliza esta función solamente cuando estés conectado a redes de confianza.\n\n¿Realmente deseas activar esta función?</string>
+    <string name="pref_title_adbonswitch">ADB sobre red</string>
+    <string name="error_connect_to_wifi">Error: Debes estar conectado a una red Wi-Fi!</string>
+    <string name="pref_description_8mp">Usar la modalidad fotocamera de 8 MegaPixeles para una mayor calidad de FPS y fotos en modalidad nocturna. Desabilitar para usar la modalidad fotocamera de 23 MegaPixeles.</string>
+    <string name="pref_title_8mp">Activar la modalidad fotocamera de 8 MegaPixeles</string>
+    <string name="pref_title_alt_act">Usar actuator alternativo</string>
+    <string name="pref_description_alt_act">En algunos tablets tenemos actuator diferentes, cambiar esta configuración si usted está experimentando problemas.</string>
+    <string name="dialog_reboot_required">Reinicio requerido</string>
+    <string name="dialog_reboot_required_summary">Es necesario reiniciar para que los cambios surtan efecto!</string>
+    <string name="reboot_now">Reiniciar ahora</string>
+    <string name="reboot_later">Reiniciar luego</string>
+    <string name="enable">Activar</string>
+    <string name="cancel">Cancelar</string>
+
+</resources>
