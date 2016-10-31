@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Erweiterte Einstellungen</string>
+
+    <!-- Strings related to Settings -->
+    <string name="pref_description_adbonswitch">TCP/IP-Debugging über Netzwerkschnittstellen (WLAN, USB-Netzwerke) aktivieren. Diese Einstellung wird beim Neustart zurückgesetzt.</string>
+    <string name="pref_description_adbonswitchdialog">WARNUNG: Wenn ADB übers Netzwerk aktiviert ist, kann auf Ihr Gerät von jedem verbundenen Netzwerk zugegriffen werden!\n\nDiese Funktion sollten Sie nur verwenden, wenn Sie sich in einem vertrauenswürdigen Netzwerk befinden.\n\nMöchten Sie diese Funktion trotzdem aktivieren?</string>
+    <string name="pref_title_adbonswitch">ADB über Netzwerk</string>
+    <string name="error_connect_to_wifi">Error: W-LAN muss aktiviert sein!</string>
+    <string name="pref_description_8mp">Nutze den 8MP Camera Modus, für höhere FPS und bessere Nachtmodus Bildqualität. Deaktiveren um 23MP Modus zu nutzen.</string>
+    <string name="pref_title_8mp">Aktiviere 8MP Modus</string>
+    <string name="pref_title_alt_act">Alternativen Aktuator nutzen</string>
+    <string name="pref_description_alt_act">Manche Tablets nutzen einen anderen Aktuator. Ändern sie diesen Wert, wenn sie Probleme haben.</string>
+    <string name="dialog_reboot_required">Neustart erforderlich</string>
+    <string name="dialog_reboot_required_summary">Ein Neustart ist erforderlich, um die Änderungen anzuwenden!</string>
+    <string name="reboot_now">Jetzt Neustarten</string>
+    <string name="reboot_later">Später Neustarten</string>
+    <string name="enable">Aktivieren</string>
+    <string name="cancel">Abbrechen</string>
+
+</resources>
