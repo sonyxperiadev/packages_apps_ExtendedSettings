@@ -5,6 +5,8 @@
     <string name="pref_description_adbonswitch">Attiva il debug TCP/IP attraverso interfacce di rete (Wi\u2011Fi, reti USB). Questa opzione verrà disattivata automaticamente al riavvio</string>
     <string name="pref_description_adbonswitchdialog">ATTENZIONE: Quando ADB in rete è attivata, il dispositivo non sarà protetto contro eventuali intrusioni! \n\nUtilizzare questa funzionalità solo quando si è connessi su reti attendibili.\n\nAbilitare questa funzione?</string>
     <string name="pref_title_adbonswitch">ADB attraverso la rete</string>
+    <string name="pref_description_drsdialog">Per cambiare la risoluzione del display bisogna riavviare l\'interfaccia utente.\n\nVuoi continuare?</string>
+    <string name="pref_title_dynres_switch">Risoluzione Display</string>
     <string name="error_connect_to_wifi">Errore: Devi essere collegato su una rete Wi-Fi!</string>
     <string name="pref_description_8mp">Usare la modalità fotocamera 8 MegaPixel per avere un framerate maggiore e foto in modalità notte. Disabilitare per usare la modalità fotocamera 23 MegaPixel.</string>
     <string name="pref_title_8mp">Attiva modalità fotocamera 8MP</string>

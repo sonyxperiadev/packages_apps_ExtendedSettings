@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
@@ -15,10 +17,19 @@ import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.SurfaceControl;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteOrder;
+import java.util.LinkedList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -34,6 +45,10 @@ import java.nio.ByteOrder;
 public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
 
     private static final String TAG = "ExtendedSettings";
+
+    protected static final String SYSFS_FB_MODES = "/sys/devices/virtual/graphics/fb0/modes";
+    protected static final String SYSFS_FB_MODESET = "/sys/devices/virtual/graphics/fb0/mode";
+
     protected static final String PREF_8MP_23MP_ENABLED = "persist.camera.8mp.config";
     protected static final String PREF_ADB_NETWORK_COM = "adb.network.port.es";
     private static final String PREF_ADB_NETWORK_READ = "service.adb.tcp.port";
@@ -41,9 +56,44 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
     private static final String m8MPSwitchPref = "8mp_switch";
     private static final String mCameraAltAct = "alt_act_switch";
     protected static final String mADBOverNetworkSwitchPref = "adbon_switch";
+    protected static final String mDynamicResolutionSwitchPref = "dynres_list_switch";
+
+    private static final int BUILT_IN_DISPLAY_ID_MAIN = 0;
+
     private static FragmentManager mFragmentManager;
     protected static AppCompatPreferenceActivity mActivity;
     private SharedPreferences.Editor mPrefEditor;
+    private static boolean drsInited = false;
+
+    private static final class DisplayParameters {
+        private int height;
+        private int width;
+        private int refreshRate;
+
+        private DisplayParameters(int height, int width, int refreshRate) {
+            this.height = height;
+            this.width = width;
+            this.refreshRate = refreshRate;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof DisplayParameters))
+                return false;
+            if (obj == this)
+                return true;
+
+            DisplayParameters dp = (DisplayParameters) obj;
+            if (this.width == dp.width &&
+                    this.height == dp.height &&
+                    this.refreshRate == dp.refreshRate)
+                return true;
+
+            return false;
+        }
+    }
+
+    private static LinkedList<DisplayParameters> thisDp = new LinkedList<>();
 
     /**
      * A preference value change listener that updates the preference's summary
@@ -68,6 +118,9 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
                         setSystemProperty(PREF_ADB_NETWORK_COM, "-1");
                         updateADBSummary(false);
                     }
+                    break;
+                case mDynamicResolutionSwitchPref:
+                    confirmPerformDRS(Integer.parseInt((String)value));
                     break;
                 default:
                     break;
@@ -100,6 +153,9 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
 
         loadPref(m8MPSwitchPref, PREF_8MP_23MP_ENABLED);
         loadPref(mCameraAltAct, PREF_CAMERA_ALT_ACT);
+
+        initializeDRSListPreference();
+        findPreference(mDynamicResolutionSwitchPref).setOnPreferenceChangeListener(mPreferenceListener);
 
         String adbN = getSystemProperty(PREF_ADB_NETWORK_READ);
         boolean adbNB = isNumeric(adbN) && (Integer.parseInt(adbN) > 0);
@@ -156,6 +212,202 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /*
+     * getAvailableResolutions - Query SurfaceFlinger for getting display resolutions
+     *
+     * Note: This is the "legal" Android way to get the available display resolutions.
+     *       Use only when the HWC2 implementation will be complete.
+     */
+    protected static String getAvailableResolutions(int dispId) {
+        IBinder dispHandle = SurfaceControl.getBuiltInDisplay(dispId);
+        SurfaceControl.PhysicalDisplayInfo[] displayCfgs =
+                SurfaceControl.getDisplayConfigs(dispHandle);
+        int currentCfgNo = SurfaceControl.getActiveConfig(dispHandle);
+        String ret;
+
+        SurfaceControl.PhysicalDisplayInfo currentCfg = displayCfgs[currentCfgNo];
+        Log.d(TAG, "Current resolution: " + currentCfg.width + "x" +
+                    currentCfg.height + " @ " + currentCfg.refreshRate +
+                    "hz, " + currentCfg.density + "DPI");
+        ret = currentCfg.width + "x" + currentCfg.height + "@" +
+                currentCfg.refreshRate + "hz";
+        return ret;
+    }
+
+    /*
+     * sysfs_readResolutions - Read resolutions from sysfs framebuffer node
+     *
+     * The modes sysfs file outputs one string per line, formatted like this:
+     * U:WxH-Hz --- For example: U:2160x3840p-60
+     *
+     * Note: This implementation is temporary, used only until we get a
+     *       finished HWC2 implementation for the QC display HAL.
+     */
+    protected static int sysfs_readResolutions() {
+        try {
+            FileInputStream sysfsFile = new FileInputStream(SYSFS_FB_MODES);
+            BufferedReader fileReader = new BufferedReader(
+                    new InputStreamReader(sysfsFile));
+            String line = fileReader.readLine();
+            int temp = 0;
+
+            Pattern reg = Pattern.compile("^[A-Z]:(\\d+)x(\\d+)p-(\\d+)$");
+            while (line != null) {
+                Matcher pat = reg.matcher(line);
+                pat.find();
+                DisplayParameters curParm = new DisplayParameters(
+                        Integer.parseInt(pat.group(1)),
+                        Integer.parseInt(pat.group(2)),
+                        Integer.parseInt(pat.group(3))
+                );
+                thisDp.add(curParm);
+
+                temp++;
+                line = fileReader.readLine();
+            }
+            return 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    protected static DisplayParameters sysfs_getCurrentResolution(int fbId) {
+        try {
+            FileInputStream sysfsFile = new FileInputStream(SYSFS_FB_MODESET);
+            BufferedReader fileReader = new BufferedReader(
+                    new InputStreamReader(sysfsFile));
+            String line = fileReader.readLine();
+            DisplayParameters dispParms;
+
+            Matcher pat = Pattern.compile("^[A-Z]:(\\d+)x(\\d+)p-(\\d+)$").matcher(line);
+            pat.find();
+            dispParms = new DisplayParameters(
+                    Integer.parseInt(pat.group(1)),
+                    Integer.parseInt(pat.group(2)),
+                    Integer.parseInt(pat.group(3))
+            );
+
+            return dispParms;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    protected static String sysfs_getCurrentResolutionString(int fbId) {
+        try {
+            FileInputStream sysfsFile = new FileInputStream(SYSFS_FB_MODESET);
+            BufferedReader fileReader = new BufferedReader(
+                    new InputStreamReader(sysfsFile));
+            String line = fileReader.readLine();
+
+            return line;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    protected static String formatResolutionForUI(int entry) {
+        DisplayParameters curParms = thisDp.get(entry);
+        String ret = curParms.height + "p" + " @" + curParms.refreshRate + "Hz";
+
+        return ret;
+    }
+
+    protected static int resolutionToEntry(DisplayParameters myRes) {
+        int i = 0;
+        boolean found = false;
+
+        while (!found && i < thisDp.size()) {
+            DisplayParameters tempDp = thisDp.get(i);
+            if (thisDp.get(i).equals(myRes))
+                found = true;
+            else i++;
+        }
+
+        if (!found)
+            return -1;
+
+        return i;
+    }
+    
+    protected void initializeDRSListPreference() {
+        DisplayParameters currentRes = sysfs_getCurrentResolution(0);
+        ListPreference resPref = (ListPreference)findPreference(mDynamicResolutionSwitchPref);
+        int i, curResVal;
+
+        sysfs_readResolutions();
+
+        CharSequence[] entries = new CharSequence[thisDp.size()];
+        CharSequence[] entryValues = new CharSequence[thisDp.size()];
+
+        for (i = 0; i < thisDp.size(); i++) {
+            entries[i] = formatResolutionForUI(i);
+            entryValues[i] = Integer.toString(i);
+        }
+
+        if (!drsInited) {
+            resPref.setEntries(entries);
+            resPref.setEntryValues(entryValues);
+            drsInited = true;
+        }
+
+        curResVal = resolutionToEntry(currentRes);
+        resPref.setDefaultValue(Integer.toString(curResVal));
+        resPref.setValueIndex(curResVal);
+
+        resPref.setSummary(sysfs_getCurrentResolutionString(0));
+    }
+
+    protected static void performDRS(int resId) {
+        IBinder displayHandle = SurfaceControl.getBuiltInDisplay(BUILT_IN_DISPLAY_ID_MAIN);
+        int width, height;
+
+        Log.e(TAG, "Performing DRS for mode " + resId);
+
+        if (displayHandle == null) {
+            Log.e(TAG, "Cannot get an handle to the current display.");
+            return;
+        }
+
+        int curMode = SurfaceControl.getActiveConfig(displayHandle);
+        SurfaceControl.PhysicalDisplayInfo[] displayCfgs =
+                SurfaceControl.getDisplayConfigs(displayHandle);
+
+        width = displayCfgs[resId].width;
+        height = displayCfgs[resId].height;
+
+        /* This is an hack for incomplete HWC2 implementation */
+        if ((resId == curMode) && (resId < 1)) {
+            SurfaceControl.openTransaction();
+            SurfaceControl.setActiveConfig(displayHandle, curMode + 1);
+            SurfaceControl.closeTransaction();
+        }
+        /* END */
+
+        SurfaceControl.openTransaction();
+
+        SurfaceControl.setActiveConfig(displayHandle, resId);
+        SurfaceControl.setDisplaySize(displayHandle, width, height);
+
+        SurfaceControl.closeTransaction();
+
+        setSystemProperty("debug.sf.nobootanimation", "1");
+        setSystemProperty("ctl.restart", "surfaceflinger");
+        /* ToDo: Set nobootanimation back to 0 after SF restart */
+    }
+
+    private static void confirmPerformDRS(int resId) {
+        DialogFragment newFragment = new performDRSDialog();
+        Bundle fragArgs = new Bundle();
+        fragArgs.putInt(performDRSDialog.DRS_RESOLUTION_ID, resId);
+
+        newFragment.setArguments(fragArgs);
+        newFragment.show(mFragmentManager, "drs");
     }
 
     private static void confirmEnablingADBON() {
