@@ -20,7 +20,9 @@ import android.view.MenuItem;
 import android.view.SurfaceControl;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -69,11 +71,20 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         private int height;
         private int width;
         private int refreshRate;
+        private String modeString;
 
         private DisplayParameters(int height, int width, int refreshRate) {
             this.height = height;
             this.width = width;
             this.refreshRate = refreshRate;
+        }
+
+        private DisplayParameters(int height, int width,
+                                  int refreshRate, String modeString) {
+            this.height = height;
+            this.width = width;
+            this.refreshRate = refreshRate;
+            this.modeString = modeString;
         }
 
         @Override
@@ -87,6 +98,21 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
             if (this.width == dp.width &&
                     this.height == dp.height &&
                     this.refreshRate == dp.refreshRate)
+                return true;
+
+            return false;
+        }
+
+        public boolean isOnlyRefreshRateChange(Object obj) {
+            if (!(obj instanceof DisplayParameters))
+                return false;
+            if (obj == this)
+                return true;
+
+            DisplayParameters dp = (DisplayParameters) obj;
+            if (this.width == dp.width &&
+                    this.height == dp.height &&
+                    this.refreshRate != dp.refreshRate)
                 return true;
 
             return false;
@@ -260,7 +286,8 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
                 DisplayParameters curParm = new DisplayParameters(
                         Integer.parseInt(pat.group(1)),
                         Integer.parseInt(pat.group(2)),
-                        Integer.parseInt(pat.group(3))
+                        Integer.parseInt(pat.group(3)),
+                        line
                 );
                 thisDp.add(curParm);
 
@@ -363,11 +390,35 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         resPref.setSummary(sysfs_getCurrentResolutionString(0));
     }
 
+    protected static void performRRS(String modeString) {
+        try {
+            FileWriter sysfsFile = new FileWriter(SYSFS_FB_MODESET);
+            BufferedWriter writer = new BufferedWriter(sysfsFile);
+
+            setSystemProperty("debug.sf.nobootanimation", "1");
+            setSystemProperty("ctl.stop", "surfaceflinger");
+
+            writer.write(modeString + '\n');
+            writer.close();
+
+            setSystemProperty("ctl.start", "surfaceflinger");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     protected static void performDRS(int resId) {
         IBinder displayHandle = SurfaceControl.getBuiltInDisplay(BUILT_IN_DISPLAY_ID_MAIN);
         int width, height;
 
         Log.e(TAG, "Performing DRS for mode " + resId);
+
+        DisplayParameters dpCur = sysfs_getCurrentResolution(0);
+        DisplayParameters dpNew = thisDp.get(resId);
+        if (dpNew.isOnlyRefreshRateChange(dpCur)) {
+            performRRS(dpNew.modeString);
+            return;
+        }
 
         if (displayHandle == null) {
             Log.e(TAG, "Cannot get an handle to the current display.");
@@ -397,6 +448,7 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         SurfaceControl.closeTransaction();
 
         setSystemProperty("debug.sf.nobootanimation", "1");
+
         setSystemProperty("ctl.restart", "surfaceflinger");
         /* ToDo: Set nobootanimation back to 0 after SF restart */
     }
@@ -490,3 +542,4 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         }
     }
 }
+
