@@ -180,8 +180,13 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         loadPref(m8MPSwitchPref, PREF_8MP_23MP_ENABLED);
         loadPref(mCameraAltAct, PREF_CAMERA_ALT_ACT);
 
-        initializeDRSListPreference();
-        findPreference(mDynamicResolutionSwitchPref).setOnPreferenceChangeListener(mPreferenceListener);
+        int ret = initializeDRSListPreference();
+        if(ret == 0) {
+            findPreference(mDynamicResolutionSwitchPref).setOnPreferenceChangeListener(mPreferenceListener);
+        } else {
+            getPreferenceScreen().removePreference(findPreference(mDynamicResolutionSwitchPref));
+        }
+
 
         String adbN = getSystemProperty(PREF_ADB_NETWORK_READ);
         boolean adbNB = isNumeric(adbN) && (Integer.parseInt(adbN) > 0);
@@ -362,7 +367,7 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         return i;
     }
     
-    protected void initializeDRSListPreference() {
+    protected int initializeDRSListPreference() {
         DisplayParameters currentRes = sysfs_getCurrentResolution(0);
         ListPreference resPref = (ListPreference)findPreference(mDynamicResolutionSwitchPref);
         int i, curResVal;
@@ -384,10 +389,18 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         }
 
         curResVal = resolutionToEntry(currentRes);
+
+        if(curResVal < 0) {
+            Log.e(TAG, "initializeDRSListPreference: Active mode is blank or cannot be detected." +
+                    " DRS will be disabled");
+            return -1;
+        }
+
         resPref.setDefaultValue(Integer.toString(curResVal));
         resPref.setValueIndex(curResVal);
 
         resPref.setSummary(sysfs_getCurrentResolutionString(0));
+        return 0;
     }
 
     protected static void performRRS(String modeString) {
