@@ -5,6 +5,8 @@
     <string name="pref_description_adbonswitch">Enable TCP/IP debugging over network interfaces (Wi\u2011Fi, USB networks). This setting is reset on reboot.</string>
     <string name="pref_description_adbonswitchdialog">WARNING: When ADB over network is enabled, your phone is open for intrusions on all connected networks!\n\nOnly use this feature when you are connected on trusted networks.\n\nDo you really want to enable this function?</string>
     <string name="pref_title_adbonswitch">ADB over network</string>
+    <string name="pref_description_drsdialog">Dynamic Resolution Switch needs to restart the UI.\n\nDo you want to continue?</string>
+    <string name="pref_title_dynres_switch">Dynamic Resolution Switch</string>
     <string name="error_connect_to_wifi">Error: You need to be connected to a WiFi!</string>
     <string name="pref_description_8mp">Use the 8MP camera mode for higher FPS and better nightmode picture quality. Disable to use the 23MP mode.</string>
     <string name="pref_title_8mp">Enable 8MP mode</string>

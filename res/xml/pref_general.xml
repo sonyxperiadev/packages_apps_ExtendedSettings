@@ -17,4 +17,10 @@
         android:key="adbon_switch"
         android:summary="@string/pref_description_adbonswitch"
         android:title="@string/pref_title_adbonswitch" />
+
+    <ListPreference
+        android:defaultValue="1"
+        android:key="dynres_list_switch"
+        android:title="@string/pref_title_dynres_switch"
+        android:summary="Current resolution:"/>
 </PreferenceScreen>
