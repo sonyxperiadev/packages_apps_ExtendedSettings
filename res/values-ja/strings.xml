@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">拡張設定</string>
+
+    <!-- Strings related to Settings -->
+    <string name="pref_description_adbonswitch">ネットワークインターフェース（Wi\u2011Fi、USBネットワーク）経由でのTCP/IPデバッグを有効にします。この設定は再起動時にリセットされます</string>
+    <string name="pref_description_adbonswitchdialog">警告: ネットワーク経由の ADB が有効になっているとき、端末は接続しているすべてのネットワーク上で侵入に対して無防備になります。\n\n信頼できるネットワーク接続しているときにのみ、この機能を使用してください。\n\nこの機能を本当に有効にしますか？</string>
+    <string name="pref_title_adbonswitch">ネットワーク経由の ADB</string>
+    <string name="pref_description_drsdialog">解像度の変更には UI の再起動が必要です。\n\n続行しますか？</string>
+    <string name="pref_title_dynres_switch">解像度の変更</string>
+    <string name="error_connect_to_wifi">エラー: Wi\u2011Fi に接続してください！</string>
+    <string name="pref_description_8mp">FPS と夜景モードでの画質を改善するためカメラで 8MP モードを使うようにします。23MP モードを使いたい場合は無効化してください</string>
+    <string name="pref_title_8mp">8MP モードの有効化</string>
+    <string name="pref_title_alt_act">別のアクチュエータを使用する</string>
+    <string name="pref_description_alt_act">一部のタブレットでは通常と異なるアクチュエータを使用しています。問題が発生したらこの設定を変更してください</string>
+    <string name="dialog_reboot_required">再起動してください</string>
+    <string name="dialog_reboot_required_summary">変更を反映するには再起動してください！</string>
+    <string name="reboot_now">今すぐ再起動する</string>
+    <string name="reboot_later">後で再起動する</string>
+    <string name="enable">有効化</string>
+    <string name="cancel">キャンセル</string>
+
+</resources>
