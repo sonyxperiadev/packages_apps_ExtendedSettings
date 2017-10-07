@@ -53,6 +53,7 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
     protected static final String SYSFS_FB_PCC_PROFILE = "/sys/devices/mdss_dsi_panel/pcc_profile";
 
     protected static final String PREF_8MP_23MP_ENABLED = "persist.camera.8mp.config";
+    protected static final String PREF_DISPCAL_SETTING = "persist.dispcal.setting";
     protected static final String PREF_ADB_NETWORK_COM = "adb.network.port.es";
     private static final String PREF_ADB_NETWORK_READ = "service.adb.tcp.port";
     private static final String PREF_CAMERA_ALT_ACT = "persist.camera.alt.act";
@@ -203,7 +204,9 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
                     confirmPerformDRS(Integer.parseInt((String)value));
                     break;
                 case mDispCalSwitchPref:
-                    performDisplayCalibration(Integer.parseInt((String)value));
+                    boolean performed = performDisplayCalibration(Integer.parseInt((String)value));
+                    if (performed)
+                        setSystemProperty(PREF_DISPCAL_SETTING, (String)value);
                     break;
                 default:
                     break;
@@ -559,16 +562,21 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         }
     }
 
-    private static void performDisplayCalibration(int calId) {
+    /* WARNING: Be careful! This function is called at PRE_BOOT_COMPLETED stage! */
+    protected static boolean performDisplayCalibration(int calId) {
         try {
             FileWriter sysfsFile = new FileWriter(SYSFS_FB_PCC_PROFILE);
             BufferedWriter writer = new BufferedWriter(sysfsFile);
+            String calIdStr = Integer.toString(calId);
 
-            writer.write(Integer.toString(calId) + '\n');
+            writer.write(calIdStr + '\n');
             writer.close();
 
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
+
+            return false;
         }
     }
 
