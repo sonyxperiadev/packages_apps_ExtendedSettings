@@ -4,6 +4,8 @@
     android:sharedUserId="android.uid.system">
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.MANAGE_DEVICE_ADMINS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.REBOOT" />
 
     <application
@@ -30,11 +32,10 @@
             android:name=".BootBroadcastReceiver"
             android:exported="false"
             android:directBootAware="true">
-            <!-- Listening the BOOT_COMPLETED action for legacy pre-N devices -->
             <intent-filter>
                 <action android:name="android.intent.action.PRE_BOOT_COMPLETED" />
-                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.USER_UNLOCKED" />
             </intent-filter>
         </receiver>
 
