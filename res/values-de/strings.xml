@@ -5,6 +5,8 @@
     <string name="pref_description_adbonswitch">TCP/IP-Debugging über Netzwerkschnittstellen (WLAN, USB-Netzwerke) aktivieren. Diese Einstellung wird beim Neustart zurückgesetzt.</string>
     <string name="pref_description_adbonswitchdialog">WARNUNG: Wenn ADB übers Netzwerk aktiviert ist, kann auf Ihr Gerät von jedem verbundenen Netzwerk zugegriffen werden!\n\nDiese Funktion sollten Sie nur verwenden, wenn Sie sich in einem vertrauenswürdigen Netzwerk befinden.\n\nMöchten Sie diese Funktion trotzdem aktivieren?</string>
     <string name="pref_title_adbonswitch">ADB über Netzwerk</string>
+    <string name="pref_description_drsdialog">Dynamic Resolution Switch muss die UI neustarten.\n\nMöchten sie fortfahren?</string>
+    <string name="pref_title_dynres_switch">Dynamic Resolution Switch</string>
     <string name="error_connect_to_wifi">Error: W-LAN muss aktiviert sein!</string>
     <string name="pref_description_8mp">Nutze den 8MP Camera Modus, für höhere FPS und bessere Nachtmodus Bildqualität. Deaktiveren um 23MP Modus zu nutzen.</string>
     <string name="pref_title_8mp">Aktiviere 8MP Modus</string>
