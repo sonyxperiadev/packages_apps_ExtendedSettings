@@ -50,8 +50,10 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
 
     protected static final String SYSFS_FB_MODES = "/sys/devices/virtual/graphics/fb0/modes";
     protected static final String SYSFS_FB_MODESET = "/sys/devices/virtual/graphics/fb0/mode";
+    protected static final String SYSFS_FB_PCC_PROFILE = "/sys/devices/mdss_dsi_panel/pcc_profile";
 
     protected static final String PREF_8MP_23MP_ENABLED = "persist.camera.8mp.config";
+    protected static final String PREF_DISPCAL_SETTING = "persist.dispcal.setting";
     protected static final String PREF_ADB_NETWORK_COM = "adb.network.port.es";
     private static final String PREF_ADB_NETWORK_READ = "service.adb.tcp.port";
     private static final String PREF_CAMERA_ALT_ACT = "persist.camera.alt.act";
@@ -59,6 +61,7 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
     private static final String mCameraAltAct = "alt_act_switch";
     protected static final String mADBOverNetworkSwitchPref = "adbon_switch";
     protected static final String mDynamicResolutionSwitchPref = "dynres_list_switch";
+    protected static final String mDispCalSwitchPref = "dispcal_list_switch";
 
     private static final int BUILT_IN_DISPLAY_ID_MAIN = 0;
 
@@ -66,6 +69,58 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
     protected static AppCompatPreferenceActivity mActivity;
     private SharedPreferences.Editor mPrefEditor;
     private static boolean drsInited = false;
+
+    private enum dispCal {
+        PANEL_CALIB_6000K(0),
+        PANEL_CALIB_F6(1),
+        PANEL_CALIB_D50(2),
+        PANEL_CALIB_D65(3),
+        PANEL_CALIB_END(4);
+
+        private final int val;
+
+        private dispCal(int value) {
+            this.val = value;
+        }
+
+        public int getInt() {
+            return val;
+        }
+
+        public static String getElementName(dispCal elm) {
+            switch (elm) {
+                case PANEL_CALIB_6000K:
+                    return "6000K";
+                case PANEL_CALIB_F6:
+                    return "F6: 4150K";
+                case PANEL_CALIB_D50:
+                    return "D50: 5000K";
+                case PANEL_CALIB_D65:
+                    return "D65: 6500K";
+                default:
+                    return "ERROR: UNKNOWN";
+            }
+        }
+
+        public static String getElementName(int elm) {
+            switch (elm) {
+                case 0:
+                    return "6000K";
+                case 1:
+                    return "F6: 4150K";
+                case 2:
+                    return "D50: 5000K";
+                case 3:
+                    return "D65: 6500K";
+                default:
+                    return "ERROR: UNKNOWN";
+            }
+        }
+
+        public static int lastElement() {
+            return dispCal.PANEL_CALIB_END.getInt();
+        }
+    }
 
     private static final class DisplayParameters {
         private int height;
@@ -148,6 +203,11 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
                 case mDynamicResolutionSwitchPref:
                     confirmPerformDRS(Integer.parseInt((String)value));
                     break;
+                case mDispCalSwitchPref:
+                    boolean performed = performDisplayCalibration(Integer.parseInt((String)value));
+                    if (performed)
+                        setSystemProperty(PREF_DISPCAL_SETTING, (String)value);
+                    break;
                 default:
                     break;
             }
@@ -187,6 +247,8 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
             getPreferenceScreen().removePreference(findPreference(mDynamicResolutionSwitchPref));
         }
 
+        initializeDispCalListPreference();
+        findPreference(mDispCalSwitchPref).setOnPreferenceChangeListener(mPreferenceListener);
 
         String adbN = getSystemProperty(PREF_ADB_NETWORK_READ);
         boolean adbNB = isNumeric(adbN) && (Integer.parseInt(adbN) > 0);
@@ -464,6 +526,58 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
 
         setSystemProperty("ctl.restart", "surfaceflinger");
         /* ToDo: Set nobootanimation back to 0 after SF restart */
+    }
+
+    protected void initializeDispCalListPreference() {
+        String curDispCal;
+        int i;
+
+        try {
+            ListPreference resPref = (ListPreference)findPreference(mDispCalSwitchPref);
+            FileInputStream sysfsFile = new FileInputStream(SYSFS_FB_PCC_PROFILE);
+            BufferedReader fileReader = new BufferedReader(
+                    new InputStreamReader(sysfsFile));
+            curDispCal = fileReader.readLine();
+
+            if (curDispCal == null)
+                curDispCal = new String("Unavailable");
+
+            CharSequence[] entries = new CharSequence[dispCal.lastElement()];
+            CharSequence[] entryValues = new CharSequence[dispCal.lastElement()];
+            for (i = 0; i < dispCal.lastElement(); i++) {
+                entries[i] = dispCal.getElementName(i);
+                entryValues[i] = Integer.toString(i);
+            }
+
+            resPref.setEntries(entries);
+            resPref.setEntryValues(entryValues);
+
+            resPref.setDefaultValue(dispCal.getElementName(Integer.parseInt(curDispCal)));
+            resPref.setValueIndex(Integer.parseInt(curDispCal));
+
+            resPref.setSummary(dispCal.getElementName(Integer.parseInt(curDispCal)));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /* WARNING: Be careful! This function is called at PRE_BOOT_COMPLETED stage! */
+    protected static boolean performDisplayCalibration(int calId) {
+        try {
+            FileWriter sysfsFile = new FileWriter(SYSFS_FB_PCC_PROFILE);
+            BufferedWriter writer = new BufferedWriter(sysfsFile);
+            String calIdStr = Integer.toString(calId);
+
+            writer.write(calIdStr + '\n');
+            writer.close();
+
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            return false;
+        }
     }
 
     private static void confirmPerformDRS(int resId) {
