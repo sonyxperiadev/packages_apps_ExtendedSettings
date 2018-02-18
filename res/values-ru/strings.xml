@@ -5,6 +5,9 @@
   <!-- Strings related to Settings -->
   <string name="pref_description_adbonswitch">Включить TCP/IP режим отладки через сетевые интерфейсы (Wi\u2011Fi и USB-сети). Этот параметр настройки сбрасывается при перезагрузке устройства</string>
   <string name="pref_description_adbonswitchdialog">ПРЕДУПРЕЖДЕНИЕ: Когда режим отладки по сети включён, ваш телефон доступен для взлома через все подключённые сети.\n\nИспользуйте эту функцию только когда подключены к надежным сетям.\n\nВы действительно хотите включить эту функцию?</string>
+  <string name="pref_description_drsdialog">Динамическому переключателю разрешения необходимо перезапустить пользовательский интерфейс.\n\Вы хотите продолжить?</string>
+  <string name="pref_title_dynres_switch">Динамический переключатель разрешения</string>
+  <string name="pref_title_dispcal_switch">Калибровка баланса белого</string>
   <string name="pref_title_adbonswitch">Отладка по сети</string>
   <string name="error_connect_to_wifi">Ошибка: Вы должны быть подключены к Сети!</string>
   <string name="pref_description_8mp">Используйте разрешение 8Мп для более высокого FPS и более лучшего качества фото в ночном режиме. Отключите для использования разрешения 23Мп.</string>
