@@ -238,7 +238,7 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         loadPref(mCameraAltAct, PREF_CAMERA_ALT_ACT);
 
         int ret = initializeDRSListPreference();
-        if(ret == 0) {
+        if (ret == 0) {
             findPreference(mDynamicResolutionSwitchPref).setOnPreferenceChangeListener(mPreferenceListener);
         } else {
             getPreferenceScreen().removePreference(findPreference(mDynamicResolutionSwitchPref));
@@ -554,7 +554,7 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
 
     protected static void updateDispCalPreference(int newDispCal) {
         ListPreference resPref = (ListPreference) ExtendedSettingsActivity.mActivity.findPreference(mDispCalSwitchPref);
-        if(resPref != null) {
+        if (resPref != null) {
             resPref.setValueIndex(newDispCal);
             resPref.setSummary(dispCal.getElementName(newDispCal));
         }
