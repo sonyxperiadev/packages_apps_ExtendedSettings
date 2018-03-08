@@ -386,7 +386,7 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
 
         return i;
     }
-    
+
     protected int initializeDRSListPreference() {
         ListPreference resPref = (ListPreference) findPreference(mDynamicResolutionSwitchPref);
 
@@ -630,4 +630,3 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         }
     }
 }
-
