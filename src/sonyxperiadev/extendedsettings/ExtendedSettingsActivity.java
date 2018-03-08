@@ -179,11 +179,11 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         public boolean onPreferenceChange(Preference preference, Object value) {
             switch (preference.getKey()) {
                 case m8MPSwitchPref:
-                    SystemProperties.set(PREF_8MP_23MP_ENABLED, (Boolean) value ? "true" : "false");
+                    SystemProperties.set(PREF_8MP_23MP_ENABLED, String.valueOf((Boolean) value));
                     confirmRebootChange();
                     break;
                 case mCameraAltAct:
-                    SystemProperties.set(PREF_CAMERA_ALT_ACT, (Boolean) value ? "true" : "false");
+                    SystemProperties.set(PREF_CAMERA_ALT_ACT, String.valueOf((Boolean) value));
                     confirmRebootChange();
                     break;
                 case mADBOverNetworkSwitchPref:
