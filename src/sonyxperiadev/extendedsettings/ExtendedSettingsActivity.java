@@ -195,13 +195,13 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
                     }
                     break;
                 case mDynamicResolutionSwitchPref:
-                    confirmPerformDRS(Integer.parseInt((String)value));
+                    confirmPerformDRS(Integer.parseInt((String) value));
                     break;
                 case mDispCalSwitchPref:
-                    int newDispCal = Integer.parseInt((String)value);
+                    int newDispCal = Integer.parseInt((String) value);
                     boolean performed = performDisplayCalibration(newDispCal);
                     if (performed) {
-                        SystemProperties.set(PREF_DISPCAL_SETTING, (String)value);
+                        SystemProperties.set(PREF_DISPCAL_SETTING, (String) value);
                         updateDispCalPreference(newDispCal);
                     }
                     break;
@@ -388,7 +388,7 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
     }
     
     protected int initializeDRSListPreference() {
-        ListPreference resPref = (ListPreference)findPreference(mDynamicResolutionSwitchPref);
+        ListPreference resPref = (ListPreference) findPreference(mDynamicResolutionSwitchPref);
 
         sDp = sysfs_readResolutions();
 
@@ -486,7 +486,7 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         int i;
 
         try {
-            ListPreference resPref = (ListPreference)findPreference(mDispCalSwitchPref);
+            ListPreference resPref = (ListPreference) findPreference(mDispCalSwitchPref);
             FileInputStream sysfsFile = new FileInputStream(SYSFS_FB_PCC_PROFILE);
             BufferedReader fileReader = new BufferedReader(
                     new InputStreamReader(sysfsFile));
