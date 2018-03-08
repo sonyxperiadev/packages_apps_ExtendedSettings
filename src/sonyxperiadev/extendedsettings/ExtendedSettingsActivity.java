@@ -8,6 +8,7 @@ import android.content.res.Configuration;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.SystemProperties;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -178,18 +179,18 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         public boolean onPreferenceChange(Preference preference, Object value) {
             switch (preference.getKey()) {
                 case m8MPSwitchPref:
-                    setSystemProperty(PREF_8MP_23MP_ENABLED, (Boolean) value ? "true" : "false");
+                    SystemProperties.set(PREF_8MP_23MP_ENABLED, (Boolean) value ? "true" : "false");
                     confirmRebootChange();
                     break;
                 case mCameraAltAct:
-                    setSystemProperty(PREF_CAMERA_ALT_ACT, (Boolean) value ? "true" : "false");
+                    SystemProperties.set(PREF_CAMERA_ALT_ACT, (Boolean) value ? "true" : "false");
                     confirmRebootChange();
                     break;
                 case mADBOverNetworkSwitchPref:
                     if ((Boolean) value) {
                         confirmEnablingADBON();
                     } else {
-                        setSystemProperty(PREF_ADB_NETWORK_COM, "-1");
+                        SystemProperties.set(PREF_ADB_NETWORK_COM, "-1");
                         updateADBSummary(false);
                     }
                     break;
@@ -200,7 +201,7 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
                     int newDispCal = Integer.parseInt((String)value);
                     boolean performed = performDisplayCalibration(newDispCal);
                     if (performed) {
-                        setSystemProperty(PREF_DISPCAL_SETTING, (String)value);
+                        SystemProperties.set(PREF_DISPCAL_SETTING, (String)value);
                         updateDispCalPreference(newDispCal);
                     }
                     break;
@@ -246,7 +247,7 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         initializeDispCalListPreference();
         findPreference(mDispCalSwitchPref).setOnPreferenceChangeListener(mPreferenceListener);
 
-        String adbN = getSystemProperty(PREF_ADB_NETWORK_READ);
+        String adbN = SystemProperties.get(PREF_ADB_NETWORK_READ);
         boolean adbNB = isNumeric(adbN) && (Integer.parseInt(adbN) > 0);
         mPrefEditor.putBoolean(mADBOverNetworkSwitchPref, adbNB);
         SwitchPreference adbon = (SwitchPreference) findPreference(mADBOverNetworkSwitchPref);
@@ -281,26 +282,6 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
      */
     protected boolean isValidFragment(String fragmentName) {
         return PreferenceFragment.class.getName().equals(fragmentName);
-    }
-
-    protected static String getSystemProperty(String key) {
-        String value = null;
-        try {
-            value = (String) Class.forName("android.os.SystemProperties")
-                    .getMethod("get", String.class).invoke(null, key);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return value;
-    }
-
-    protected static void setSystemProperty(String key, String value) {
-        try {
-            Class.forName("android.os.SystemProperties")
-                    .getMethod("set", String.class, String.class).invoke(null, key, value);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     /*
@@ -442,13 +423,13 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
             FileWriter sysfsFile = new FileWriter(SYSFS_FB_MODESET);
             BufferedWriter writer = new BufferedWriter(sysfsFile);
 
-            setSystemProperty("debug.sf.nobootanimation", "1");
-            setSystemProperty("ctl.stop", "surfaceflinger");
+            SystemProperties.set("debug.sf.nobootanimation", "1");
+            SystemProperties.set("ctl.stop", "surfaceflinger");
 
             writer.write(modeString + '\n');
             writer.close();
 
-            setSystemProperty("ctl.start", "surfaceflinger");
+            SystemProperties.set("ctl.start", "surfaceflinger");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -494,9 +475,9 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
 
         SurfaceControl.closeTransaction();
 
-        setSystemProperty("debug.sf.nobootanimation", "1");
+        SystemProperties.set("debug.sf.nobootanimation", "1");
 
-        setSystemProperty("ctl.restart", "surfaceflinger");
+        SystemProperties.set("ctl.restart", "surfaceflinger");
         /* ToDo: Set nobootanimation back to 0 after SF restart */
     }
 
@@ -602,14 +583,14 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
                 ipAddressString = null;
             }
             if (ipAddressString != null) {
-                mAdbOverNetwork.setSummary(ipAddressString + ":" + getSystemProperty(PREF_ADB_NETWORK_READ));
+                mAdbOverNetwork.setSummary(ipAddressString + ":" + SystemProperties.get(PREF_ADB_NETWORK_READ));
             } else {
                 mAdbOverNetwork.setSummary(R.string.error_connect_to_wifi);
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mActivity);
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putBoolean(mADBOverNetworkSwitchPref, false);
                 editor.apply();
-                setSystemProperty(PREF_ADB_NETWORK_COM, "-1");
+                SystemProperties.set(PREF_ADB_NETWORK_COM, "-1");
                 mAdbOverNetwork.setChecked(false);
             }
         } else {
@@ -627,7 +608,7 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
     }
 
     private void loadPref(String pref, String key) {
-        String pref_st = getSystemProperty(key);
+        String pref_st = SystemProperties.get(key);
         if (pref_st != null && !pref_st.equals("")) {
             mPrefEditor.putBoolean(pref, pref_st.equals("true"));
             SwitchPreference pref_sw = (SwitchPreference) findPreference(pref);

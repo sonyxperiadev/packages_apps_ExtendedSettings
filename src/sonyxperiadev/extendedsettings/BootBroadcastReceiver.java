@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.UserManager;
+import android.os.SystemProperties;
 import android.util.Log;
 
 import static android.app.admin.DevicePolicyManager.ENCRYPTION_STATUS_ACTIVATING;
@@ -44,8 +45,7 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
                     encryptionStatus != ENCRYPTION_STATUS_UNSUPPORTED)
                 return;
 
-            String sysPref = ExtendedSettingsActivity.getSystemProperty(
-                    ExtendedSettingsActivity.PREF_DISPCAL_SETTING);
+            String sysPref = SystemProperties.get(ExtendedSettingsActivity.PREF_DISPCAL_SETTING);
             if (sysPref == null || sysPref.length() < 1)
                 sysPref = "0"; /* 0 = default calibration */
 
