@@ -11,18 +11,27 @@ LOCAL_PRIVILEGED_MODULE := true
 
 LOCAL_STATIC_JAVA_LIBRARIES := \
     android-support-v4 \
-    android-support-design \
-    android-support-v7-appcompat
+    android-support-v7-appcompat \
+    android-support-v7-preference \
+    android-support-v7-recyclerview \
+    android-support-v13 \
+    android-support-v14-preference
 
 LOCAL_RESOURCE_DIR := \
     $(LOCAL_PATH)/res \
-    frameworks/support/design/res \
-    frameworks/support/v7/appcompat/res
+    frameworks/support/v14/preference/res \
+    frameworks/support/v7/appcompat/res \
+    frameworks/support/v7/preference/res \
+    frameworks/support/v7/recyclerview/res
 
 LOCAL_AAPT_FLAGS := \
     --auto-add-overlay \
-    --extra-packages android.support.design \
-    --extra-packages android.support.v7.appcompat
+    --extra-packages android.support.v14.preference \
+    --extra-packages android.support.v7.appcompat \
+    --extra-packages android.support.v7.preference \
+    --extra-packages android.support.v7.recyclerview
+
+LOCAL_PROGUARD_FLAG_FILES := proguard-rules.pro
 
 include $(BUILD_PACKAGE)
 

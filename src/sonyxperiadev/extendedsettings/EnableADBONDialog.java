@@ -6,7 +6,7 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.SystemProperties;
-import android.preference.SwitchPreference;
+import android.support.v14.preference.SwitchPreference;
 
 /**
  * Created by myself5 on 9/6/16.
@@ -23,16 +23,16 @@ public class EnableADBONDialog extends DialogFragment {
                 .setCancelable(false)
                 .setPositiveButton(R.string.enable, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        SystemProperties.set(ExtendedSettingsActivity.PREF_ADB_NETWORK_COM, "5555");
-                        ExtendedSettingsActivity.updateADBSummary(true);
+                        SystemProperties.set(ExtendedSettingsFragment.PREF_ADB_NETWORK_COM, "5555");
+                        ExtendedSettingsFragment.updateADBSummary(true);
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         SwitchPreference mSwitch = (SwitchPreference)
-                                ExtendedSettingsActivity.mActivity.findPreference(ExtendedSettingsActivity.mADBOverNetworkSwitchPref);
+                                ExtendedSettingsFragment.mFragment.findPreference(ExtendedSettingsFragment.mADBOverNetworkSwitchPref);
                         mSwitch.setChecked(false);
-                        ExtendedSettingsActivity.updateADBSummary(false);
+                        ExtendedSettingsFragment.updateADBSummary(false);
                     }
                 });
         // Create the AlertDialog object and return it
