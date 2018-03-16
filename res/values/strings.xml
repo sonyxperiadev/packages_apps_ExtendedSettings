@@ -20,4 +20,6 @@
     <string name="enable">Enable</string>
     <string name="cancel">Cancel</string>
 
+    <!-- DO NOT TRANSLATE Empty summary for dynamic preferences -->
+    <string name="summary_empty" translatable="false"></string>
 </resources>

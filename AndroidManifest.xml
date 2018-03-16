@@ -26,6 +26,9 @@
             <meta-data
                 android:name="com.android.settings.icon"
                 android:resource="@drawable/ic_extended_settings" />
+            <meta-data
+                android:name="com.android.settings.summary"
+                android:value="@string/summary_empty" />
         </activity>
 
         <receiver
