@@ -204,9 +204,12 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
                     confirmPerformDRS(Integer.parseInt((String)value));
                     break;
                 case mDispCalSwitchPref:
-                    boolean performed = performDisplayCalibration(Integer.parseInt((String)value));
-                    if (performed)
+                    int newDispCal = Integer.parseInt((String)value);
+                    boolean performed = performDisplayCalibration(newDispCal);
+                    if (performed) {
                         setSystemProperty(PREF_DISPCAL_SETTING, (String)value);
+                        updateDispCalPreference(newDispCal);
+                    }
                     break;
                 default:
                     break;
@@ -597,6 +600,14 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
     private static void confirmRebootChange() {
         DialogFragment newFragment = new confirmRebootChangeDialog();
         newFragment.show(mFragmentManager, "8mp");
+    }
+
+    protected static void updateDispCalPreference(int newDispCal) {
+        ListPreference resPref = (ListPreference) ExtendedSettingsActivity.mActivity.findPreference(mDispCalSwitchPref);
+        if(resPref != null) {
+            resPref.setValueIndex(newDispCal);
+            resPref.setSummary(dispCal.getElementName(newDispCal));
+        }
     }
 
     protected static void updateADBSummary(boolean enabled) {
