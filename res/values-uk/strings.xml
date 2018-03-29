@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">Розширені налаштування</string>
+
+    <!-- Strings related to Settings -->
+    <string name="pref_description_adbonswitch">Увімкнути режим налагодження TCP/IP через мережеві інтерфейси (Wi\u2011Fi та USB-мережі). Це налаштування скидається при 
+перезавантаженні.</string>
+    <string name="pref_description_adbonswitchdialog">УВАГА! Увімкнення функції налагодження ADB по мережі призведе до надання можливості здійснення неконтрольованого доступу 
+до пристрою з усіх підключених мереж!\n\nВикористовуйте цю функцію тільки тоді, коли ви підключені до мереж, яким ви довіряєте.\n\nВи справді бажаєте увімкнути цю функцію?</string>
+    <string name="pref_title_adbonswitch">Налагодження ADB по мережі</string>
+    <string name="pref_description_drsdialog">Динамічному перемикачу розширення необхідно перезавантажити інтерфейс користувача.\n\Бажаєте продовжити?</string>
+    <string name="pref_title_dynres_switch">Динамічний перемикач розширення</string>
+    <string name="pref_title_dispcal_switch">Калібрування балансу білого</string>
+    <string name="error_connect_to_wifi">Помилка: Ви повинні бути підключеними до Wi-Fi мережі!</string>
+    <string name="pref_description_8mp">Використовувати 8MP режим камери для вищої кількості кадрів та кращої якісті зображення у нічному режимі. Вимкніть для використовування 23MP 
+режиму.</string>
+    <string name="pref_title_8mp">Увімкнути 8MP режим</string>
+    <string name="pref_title_alt_act">Використовувати альтернативний датчик</string>
+    <string name="pref_description_alt_act">На деяких планшетах ми маємо інший датчик, змініть це, якщо у вас виникають з ним проблеми.</string>
+    <string name="dialog_reboot_required">Необхідне перезавантаження</string>
+    <string name="dialog_reboot_required_summary">Необхідне перезавантаження для того, щоб зміни вступили в силу!</string>
+    <string name="reboot_now">Перезавантажити зараз</string>
+    <string name="reboot_later">Перезавантажити пізніше</string>
+    <string name="enable">Увімкнути</string>
+    <string name="cancel">Скасувати</string>
+
+</resources>
