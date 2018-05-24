@@ -68,7 +68,6 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
     private static FragmentManager mFragmentManager;
     protected static AppCompatPreferenceActivity mActivity;
     private SharedPreferences.Editor mPrefEditor;
-    private static boolean drsInited = false;
 
     private enum dispCal {
         PANEL_CALIB_6000K(0),
@@ -128,12 +127,6 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         private int refreshRate;
         private String modeString;
 
-        private DisplayParameters(int height, int width, int refreshRate) {
-            this.height = height;
-            this.width = width;
-            this.refreshRate = refreshRate;
-        }
-
         private DisplayParameters(int height, int width,
                                   int refreshRate, String modeString) {
             this.height = height;
@@ -174,7 +167,7 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         }
     }
 
-    private static LinkedList<DisplayParameters> thisDp = new LinkedList<>();
+    private static LinkedList<DisplayParameters> sDp;
 
     /**
      * A preference value change listener that updates the preference's summary
@@ -341,87 +334,68 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
      * Note: This implementation is temporary, used only until we get a
      *       finished HWC2 implementation for the QC display HAL.
      */
-    protected static int sysfs_readResolutions() {
+    protected static LinkedList<DisplayParameters> sysfs_readResolutions() {
+        LinkedList<DisplayParameters> listDp = new LinkedList<>();
         try {
             FileInputStream sysfsFile = new FileInputStream(SYSFS_FB_MODES);
             BufferedReader fileReader = new BufferedReader(
                     new InputStreamReader(sysfsFile));
             String line = fileReader.readLine();
-            int temp = 0;
 
             Pattern reg = Pattern.compile("^[A-Z]:(\\d+)x(\\d+)p-(\\d+)$");
             while (line != null) {
                 Matcher pat = reg.matcher(line);
                 pat.find();
-                DisplayParameters curParm = new DisplayParameters(
+                DisplayParameters newDp = new DisplayParameters(
                         Integer.parseInt(pat.group(1)),
                         Integer.parseInt(pat.group(2)),
                         Integer.parseInt(pat.group(3)),
                         line
                 );
-                thisDp.add(curParm);
+                listDp.add(newDp);
 
-                temp++;
                 line = fileReader.readLine();
             }
-            return 0;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return -1;
+        return listDp;
     }
 
-    protected static DisplayParameters sysfs_getCurrentResolution(int fbId) {
+    protected static DisplayParameters sysfs_getCurrentResolution() {
+        DisplayParameters curDp = null;
         try {
             FileInputStream sysfsFile = new FileInputStream(SYSFS_FB_MODESET);
             BufferedReader fileReader = new BufferedReader(
                     new InputStreamReader(sysfsFile));
             String line = fileReader.readLine();
-            DisplayParameters dispParms;
 
-            Matcher pat = Pattern.compile("^[A-Z]:(\\d+)x(\\d+)p-(\\d+)$").matcher(line);
+            Pattern reg = Pattern.compile("^[A-Z]:(\\d+)x(\\d+)p-(\\d+)$");
+            Matcher pat = reg.matcher(line);
             pat.find();
-            dispParms = new DisplayParameters(
+            curDp = new DisplayParameters(
                     Integer.parseInt(pat.group(1)),
                     Integer.parseInt(pat.group(2)),
-                    Integer.parseInt(pat.group(3))
+                    Integer.parseInt(pat.group(3)),
+                    line
             );
 
-            return dispParms;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
+        return curDp;
     }
 
-    protected static String sysfs_getCurrentResolutionString(int fbId) {
-        try {
-            FileInputStream sysfsFile = new FileInputStream(SYSFS_FB_MODESET);
-            BufferedReader fileReader = new BufferedReader(
-                    new InputStreamReader(sysfsFile));
-            String line = fileReader.readLine();
-
-            return line;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+    protected static String formatResolutionForUI(DisplayParameters dp) {
+        return dp.height + " x " + dp.width + "p" +" @" + dp.refreshRate + "Hz";
     }
 
-    protected static String formatResolutionForUI(int entry) {
-        DisplayParameters curParms = thisDp.get(entry);
-        String ret = curParms.height + "p" + " @" + curParms.refreshRate + "Hz";
-
-        return ret;
-    }
-
-    protected static int resolutionToEntry(DisplayParameters myRes) {
+    protected static int resolutionToEntry(DisplayParameters dp) {
         int i = 0;
         boolean found = false;
 
-        while (!found && i < thisDp.size()) {
-            DisplayParameters tempDp = thisDp.get(i);
-            if (thisDp.get(i).equals(myRes))
+        while (!found && i < sDp.size()) {
+            if (sDp.get(i).equals(dp))
                 found = true;
             else i++;
         }
@@ -433,38 +407,33 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
     }
     
     protected int initializeDRSListPreference() {
-        DisplayParameters currentRes = sysfs_getCurrentResolution(0);
         ListPreference resPref = (ListPreference)findPreference(mDynamicResolutionSwitchPref);
-        int i, curResVal;
 
-        sysfs_readResolutions();
+        sDp = sysfs_readResolutions();
 
-        CharSequence[] entries = new CharSequence[thisDp.size()];
-        CharSequence[] entryValues = new CharSequence[thisDp.size()];
+        CharSequence[] entries = new CharSequence[sDp.size()];
+        CharSequence[] entryValues = new CharSequence[sDp.size()];
 
-        for (i = 0; i < thisDp.size(); i++) {
-            entries[i] = formatResolutionForUI(i);
+        for (int i = 0; i < sDp.size(); i++) {
+            entries[i] = formatResolutionForUI((DisplayParameters) sDp.get(i));
             entryValues[i] = Integer.toString(i);
         }
 
-        if (!drsInited) {
-            resPref.setEntries(entries);
-            resPref.setEntryValues(entryValues);
-            drsInited = true;
-        }
+        resPref.setEntries(entries);
+        resPref.setEntryValues(entryValues);
 
-        curResVal = resolutionToEntry(currentRes);
+        DisplayParameters curDp = sysfs_getCurrentResolution();
+        int curVal = resolutionToEntry(curDp);
 
-        if(curResVal < 0) {
+        if (curVal < 0) {
             Log.e(TAG, "initializeDRSListPreference: Active mode is blank or cannot be detected." +
                     " DRS will be disabled");
             return -1;
         }
 
-        resPref.setDefaultValue(Integer.toString(curResVal));
-        resPref.setValueIndex(curResVal);
+        resPref.setValue(Integer.toString(curVal));
+        resPref.setSummary(formatResolutionForUI(curDp));
 
-        resPref.setSummary(sysfs_getCurrentResolutionString(0));
         return 0;
     }
 
@@ -491,8 +460,8 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
 
         Log.e(TAG, "Performing DRS for mode " + resId);
 
-        DisplayParameters dpCur = sysfs_getCurrentResolution(0);
-        DisplayParameters dpNew = thisDp.get(resId);
+        DisplayParameters dpCur = sysfs_getCurrentResolution();
+        DisplayParameters dpNew = sDp.get(resId);
         if (dpNew.isOnlyRefreshRateChange(dpCur)) {
             performRRS(dpNew.modeString);
             return;
