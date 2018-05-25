@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Extended settings</string>
+
+    <!-- Strings related to Settings -->
+    <string name="pref_description_adbonswitch">Active le débugguage par protocole TCP/IP (Wi\u2011Fi, Réseau via USB ). Cete option est désactivée après un redémarrage.</string>
+    <string name="pref_description_adbonswitchdialog">ATTENTION: Quand ADB via réseau est activé, votre téléphone est vulnérable à toutes les commandes ADB!\n\nUtilisez cette fonction uniquement dans un réseau protégé !\n\nVoulez vous vraiment activer cette option ?</string>
+    <string name="pref_title_adbonswitch">ADB via réseau</string>
+    <string name="pref_description_drsdialog">L\'interface système doit être redémarrée pour changer de résolution.\n\nVoulez vous continuez ?</string>
+    <string name="pref_title_dynres_switch">Changeur de résolution</string>
+    <string name="pref_title_dispcal_switch">Calibration de la couleur d\'écran</string>
+    <string name="error_connect_to_wifi">Une connection à un réseau WiFi est nécessaire !</string>
+    <string name="pref_description_8mp">Utilisez ce mode pour des vidéos plus fluide et des meilleures photos de nuit.</string>
+    <string name="pref_title_8mp">Activer le mode 8MP</string>
+    <string name="pref_title_alt_act">Use alternate actuator</string>
+    <string name="pref_description_alt_act">On some tablets we have a different actuator, change this settings if you\'re experiencing issues.</string>
+    <string name="dialog_reboot_required">Redémarrage requis</string>
+    <string name="dialog_reboot_required_summary">Un redémmarage est nécessaire pour prendre en compte les changements !</string>
+    <string name="reboot_now">Redémarrer imédiatement</string>
+    <string name="reboot_later">Redémarrer plus tard</string>
+    <string name="enable">Confirmer</string>
+    <string name="cancel">Annuler</string>
+</resources>
