@@ -23,8 +23,8 @@ public class confirmRebootChangeDialog extends DialogFragment {
                 .setCancelable(false)
                 .setPositiveButton(R.string.reboot_now, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        PowerManager pm = (PowerManager) ExtendedSettingsActivity
-                                .mActivity.getSystemService(Context.POWER_SERVICE);
+                        PowerManager pm = (PowerManager) ExtendedSettingsFragment
+                                .mFragment.getContext().getSystemService(Context.POWER_SERVICE);
                         pm.reboot(null);
                     }
                 })

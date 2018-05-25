@@ -45,11 +45,11 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
                     encryptionStatus != ENCRYPTION_STATUS_UNSUPPORTED)
                 return;
 
-            String sysPref = SystemProperties.get(ExtendedSettingsActivity.PREF_DISPCAL_SETTING);
+            String sysPref = SystemProperties.get(ExtendedSettingsFragment.PREF_DISPCAL_SETTING);
             if (sysPref == null || sysPref.length() < 1)
                 sysPref = "0"; /* 0 = default calibration */
 
-            ExtendedSettingsActivity.performDisplayCalibration(Integer.parseInt(sysPref));
+            ExtendedSettingsFragment.performDisplayCalibration(Integer.parseInt(sysPref));
 
         } catch (Throwable t) {
             Log.wtf(TAG, "We have crashed. THIS IS AN HORRENDOUS BUG!");

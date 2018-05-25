@@ -27,7 +27,7 @@ public class performDRSDialog extends DialogFragment {
                 .setCancelable(false)
                 .setPositiveButton(R.string.enable, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        ExtendedSettingsActivity.performDRS(resId);
+                        ExtendedSettingsFragment.performDRS(resId);
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
