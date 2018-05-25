@@ -29,9 +29,6 @@ public class EnableADBONDialog extends DialogFragment {
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        SwitchPreference mSwitch = (SwitchPreference)
-                                ExtendedSettingsActivity.mActivity.findPreference(ExtendedSettingsActivity.mADBOverNetworkSwitchPref);
-                        mSwitch.setChecked(false);
                         ExtendedSettingsActivity.updateADBSummary(false);
                     }
                 });
