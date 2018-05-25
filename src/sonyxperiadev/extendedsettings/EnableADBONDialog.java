@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.SystemProperties;
 import android.preference.SwitchPreference;
 
 /**
@@ -22,7 +23,7 @@ public class EnableADBONDialog extends DialogFragment {
                 .setCancelable(false)
                 .setPositiveButton(R.string.enable, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        ExtendedSettingsActivity.setSystemProperty(ExtendedSettingsActivity.PREF_ADB_NETWORK_COM, "5555");
+                        SystemProperties.set(ExtendedSettingsActivity.PREF_ADB_NETWORK_COM, "5555");
                         ExtendedSettingsActivity.updateADBSummary(true);
                     }
                 })
