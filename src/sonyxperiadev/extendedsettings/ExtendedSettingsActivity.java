@@ -9,6 +9,7 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemProperties;
+import android.os.UserManager;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -69,6 +70,7 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
     private static FragmentManager mFragmentManager;
     protected static AppCompatPreferenceActivity mActivity;
     private SharedPreferences.Editor mPrefEditor;
+    private UserManager mUserManager;
 
     private enum dispCal {
         PANEL_CALIB_6000K(0),
@@ -222,7 +224,7 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupActionBar();
         mActivity = this;
@@ -247,13 +249,15 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         initializeDispCalListPreference();
         findPreference(mDispCalSwitchPref).setOnPreferenceChangeListener(mPreferenceListener);
 
-        String adbN = SystemProperties.get(PREF_ADB_NETWORK_READ);
-        boolean adbNB = isNumeric(adbN) && (Integer.parseInt(adbN) > 0);
-        mPrefEditor.putBoolean(mADBOverNetworkSwitchPref, adbNB);
-        SwitchPreference adbon = (SwitchPreference) findPreference(mADBOverNetworkSwitchPref);
-        // Set the switch state accordingly to the Preference
-        adbon.setChecked(adbNB);
-        updateADBSummary(adbNB);
+        mUserManager = (UserManager) getSystemService(Context.USER_SERVICE);
+        if (mUserManager.hasUserRestriction(UserManager.DISALLOW_DEBUGGING_FEATURES)) {
+            SystemProperties.set(PREF_ADB_NETWORK_COM, "-1");
+            getPreferenceScreen().removePreference(findPreference(mADBOverNetworkSwitchPref));
+        } else {
+            String adbN = SystemProperties.get(PREF_ADB_NETWORK_READ);
+            boolean adbNB = isNumeric(adbN) && (Integer.parseInt(adbN) > 0);
+            updateADBSummary(adbNB);
+        }
         mPrefEditor.apply();
     }
 
@@ -584,17 +588,18 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
             }
             if (ipAddressString != null) {
                 mAdbOverNetwork.setSummary(ipAddressString + ":" + SystemProperties.get(PREF_ADB_NETWORK_READ));
+                // Set the switch state accordingly to the Preference
+                mAdbOverNetwork.setChecked(true);
             } else {
                 mAdbOverNetwork.setSummary(R.string.error_connect_to_wifi);
-                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mActivity);
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putBoolean(mADBOverNetworkSwitchPref, false);
-                editor.apply();
                 SystemProperties.set(PREF_ADB_NETWORK_COM, "-1");
+                // Set the switch state accordingly to the Preference
                 mAdbOverNetwork.setChecked(false);
             }
         } else {
             mAdbOverNetwork.setSummary(R.string.pref_description_adbonswitch);
+            // Set the switch state accordingly to the Preference
+            mAdbOverNetwork.setChecked(false);
         }
     }
 
