@@ -246,7 +246,7 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
         initializeDispCalListPreference();
         findPreference(mDispCalSwitchPref).setOnPreferenceChangeListener(mPreferenceListener);
 
-        mUserManager = (UserManager) getSystemService(Context.USER_SERVICE);
+        mUserManager = getSystemService(UserManager.class);
         if (mUserManager.hasUserRestriction(UserManager.DISALLOW_DEBUGGING_FEATURES)) {
             SystemProperties.set(PREF_ADB_NETWORK_COM, "-1");
             getPreferenceScreen().removePreference(findPreference(mADBOverNetworkSwitchPref));
@@ -560,8 +560,7 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
         SwitchPreference mAdbOverNetwork = (SwitchPreference) ExtendedSettingsFragment.mFragment.findPreference(mADBOverNetworkSwitchPref);
 
         if (enabled) {
-            WifiManager wifiManager =
-                    (WifiManager) mFragment.getContext().getSystemService(Context.WIFI_SERVICE);
+            WifiManager wifiManager = mFragment.getContext().getSystemService(WifiManager.class);
             int ipAddress = wifiManager.getConnectionInfo().getIpAddress();
 
             // Convert little-endian to big-endianif needed
