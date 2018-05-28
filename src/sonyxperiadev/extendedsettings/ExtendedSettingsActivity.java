@@ -249,7 +249,7 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         initializeDispCalListPreference();
         findPreference(mDispCalSwitchPref).setOnPreferenceChangeListener(mPreferenceListener);
 
-        mUserManager = (UserManager) getSystemService(Context.USER_SERVICE);
+        mUserManager = getSystemService(UserManager.class);
         if (mUserManager.hasUserRestriction(UserManager.DISALLOW_DEBUGGING_FEATURES)) {
             SystemProperties.set(PREF_ADB_NETWORK_COM, "-1");
             getPreferenceScreen().removePreference(findPreference(mADBOverNetworkSwitchPref));
@@ -569,7 +569,7 @@ public class ExtendedSettingsActivity extends AppCompatPreferenceActivity {
         SwitchPreference mAdbOverNetwork = (SwitchPreference) ExtendedSettingsActivity.mActivity.findPreference(mADBOverNetworkSwitchPref);
 
         if (enabled) {
-            WifiManager wifiManager = (WifiManager) mActivity.getSystemService(WIFI_SERVICE);
+            WifiManager wifiManager = mActivity.getSystemService(WifiManager.class);
             int ipAddress = wifiManager.getConnectionInfo().getIpAddress();
 
             // Convert little-endian to big-endianif needed
