@@ -251,8 +251,7 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
             SystemProperties.set(PREF_ADB_NETWORK_COM, "-1");
             getPreferenceScreen().removePreference(findPreference(mADBOverNetworkSwitchPref));
         } else {
-            String adbN = SystemProperties.get(PREF_ADB_NETWORK_READ);
-            boolean adbNB = isNumeric(adbN) && (Integer.parseInt(adbN) > 0);
+            boolean adbNB = SystemProperties.getInt(PREF_ADB_NETWORK_READ, 0) > 0;
             updateADBSummary(adbNB);
         }
         mPrefEditor.apply();
@@ -578,7 +577,7 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
                 ipAddressString = null;
             }
             if (ipAddressString != null) {
-                mAdbOverNetwork.setSummary(ipAddressString + ":" + SystemProperties.get(PREF_ADB_NETWORK_READ));
+                mAdbOverNetwork.setSummary(ipAddressString + ":" + SystemProperties.getInt(PREF_ADB_NETWORK_READ, 0));
                 // Set the switch state accordingly to the Preference
                 mAdbOverNetwork.setChecked(true);
             } else {
