@@ -8,6 +8,9 @@ LOCAL_SRC_FILES := $(call all-java-files-under, src)
 LOCAL_PACKAGE_NAME := ExtendedSettings
 LOCAL_CERTIFICATE := platform
 LOCAL_PRIVILEGED_MODULE := true
+ifeq (1,$(filter 1,$(shell echo "$$(( $(PLATFORM_SDK_VERSION) >= 28 ))" )))
+LOCAL_SDK_VERSION := current
+endif
 
 LOCAL_STATIC_JAVA_LIBRARIES := \
     android-support-v4 \
