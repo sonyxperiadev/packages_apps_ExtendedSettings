@@ -7,10 +7,8 @@ LOCAL_SRC_FILES := $(call all-java-files-under, src)
 
 LOCAL_PACKAGE_NAME := ExtendedSettings
 LOCAL_CERTIFICATE := platform
+LOCAL_PRIVATE_PLATFORM_APIS := true
 LOCAL_PRIVILEGED_MODULE := true
-ifeq (1,$(filter 1,$(shell echo "$$(( $(PLATFORM_SDK_VERSION) >= 28 ))" )))
-    LOCAL_PRIVATE_PLATFORM_APIS := true
-endif
 
 LOCAL_STATIC_JAVA_LIBRARIES := \
     android-support-v4 \
@@ -22,10 +20,17 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
 
 LOCAL_RESOURCE_DIR := \
     $(LOCAL_PATH)/res \
-    frameworks/support/v14/preference/res \
     frameworks/support/v7/appcompat/res \
-    frameworks/support/v7/preference/res \
     frameworks/support/v7/recyclerview/res
+
+ifeq ($(call math_gt_or_eq, $(PLATFORM_SDK_VERSION), 28), true)
+    LOCAL_RESOURCE_DIR += \
+        frameworks/support/preference/res
+else
+    LOCAL_RESOURCE_DIR += \
+        frameworks/support/v14/preference/res \
+        frameworks/support/v7/preference/res
+endif
 
 LOCAL_AAPT_FLAGS := \
     --auto-add-overlay \
