@@ -20,10 +20,17 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
 
 LOCAL_RESOURCE_DIR := \
     $(LOCAL_PATH)/res \
-    frameworks/support/v14/preference/res \
     frameworks/support/v7/appcompat/res \
-    frameworks/support/v7/preference/res \
     frameworks/support/v7/recyclerview/res
+
+ifeq ($(call math_gt_or_eq, $(PLATFORM_SDK_VERSION), 28), true)
+    LOCAL_RESOURCE_DIR += \
+        frameworks/support/preference/res
+else
+    LOCAL_RESOURCE_DIR += \
+        frameworks/support/v14/preference/res \
+        frameworks/support/v7/preference/res
+endif
 
 LOCAL_AAPT_FLAGS := \
     --auto-add-overlay \
