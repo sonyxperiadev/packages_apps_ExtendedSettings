@@ -10,7 +10,9 @@ LOCAL_CERTIFICATE := platform
 LOCAL_PRIVATE_PLATFORM_APIS := true
 LOCAL_PRIVILEGED_MODULE := true
 
-LOCAL_STATIC_JAVA_LIBRARIES := \
+LOCAL_USE_AAPT2 := true
+
+LOCAL_STATIC_ANDROID_LIBRARIES := \
     android-support-v4 \
     android-support-v7-appcompat \
     android-support-v7-preference \
@@ -19,25 +21,7 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
     android-support-v14-preference
 
 LOCAL_RESOURCE_DIR := \
-    $(LOCAL_PATH)/res \
-    frameworks/support/v7/appcompat/res \
-    frameworks/support/v7/recyclerview/res
-
-ifeq ($(call math_gt_or_eq, $(PLATFORM_SDK_VERSION), 28), true)
-    LOCAL_RESOURCE_DIR += \
-        frameworks/support/preference/res
-else
-    LOCAL_RESOURCE_DIR += \
-        frameworks/support/v14/preference/res \
-        frameworks/support/v7/preference/res
-endif
-
-LOCAL_AAPT_FLAGS := \
-    --auto-add-overlay \
-    --extra-packages android.support.v14.preference \
-    --extra-packages android.support.v7.appcompat \
-    --extra-packages android.support.v7.preference \
-    --extra-packages android.support.v7.recyclerview
+    $(LOCAL_PATH)/res
 
 LOCAL_PROGUARD_FLAG_FILES := proguard-rules.pro
 
