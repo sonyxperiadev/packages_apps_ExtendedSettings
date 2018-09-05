@@ -24,9 +24,8 @@ import android.view.SurfaceControl;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -309,10 +308,8 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
      */
     protected static LinkedList<DisplayParameters> sysfs_readResolutions() {
         LinkedList<DisplayParameters> listDp = new LinkedList<>();
-        try {
-            FileInputStream sysfsFile = new FileInputStream(SYSFS_FB_MODES);
-            BufferedReader fileReader = new BufferedReader(
-                    new InputStreamReader(sysfsFile));
+        try (FileReader sysfsFile = new FileReader(SYSFS_FB_MODES);
+             BufferedReader fileReader = new BufferedReader(sysfsFile)) {
             String line = fileReader.readLine();
 
             Pattern reg = Pattern.compile("^[A-Z]:(\\d+)x(\\d+)p-(\\d+)$");
@@ -337,10 +334,8 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
 
     protected static DisplayParameters sysfs_getCurrentResolution() {
         DisplayParameters curDp = null;
-        try {
-            FileInputStream sysfsFile = new FileInputStream(SYSFS_FB_MODESET);
-            BufferedReader fileReader = new BufferedReader(
-                    new InputStreamReader(sysfsFile));
+        try (FileReader sysfsFile = new FileReader(SYSFS_FB_MODESET);
+             BufferedReader fileReader = new BufferedReader(sysfsFile)) {
             String line = fileReader.readLine();
 
             Pattern reg = Pattern.compile("^[A-Z]:(\\d+)x(\\d+)p-(\\d+)$");
@@ -413,9 +408,8 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
     }
 
     protected static void performRRS(String modeString) {
-        try {
-            FileWriter sysfsFile = new FileWriter(SYSFS_FB_MODESET);
-            BufferedWriter writer = new BufferedWriter(sysfsFile);
+        try (FileWriter sysfsFile = new FileWriter(SYSFS_FB_MODESET);
+             BufferedWriter writer = new BufferedWriter(sysfsFile)) {
 
             SystemProperties.set("debug.sf.nobootanimation", "1");
             SystemProperties.set("ctl.stop", "surfaceflinger");
@@ -479,11 +473,9 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
         String curDispCal;
         int i;
 
-        try {
+        try (FileReader sysfsFile = new FileReader(SYSFS_FB_PCC_PROFILE);
+             BufferedReader fileReader = new BufferedReader(sysfsFile)) {
             ListPreference resPref = (ListPreference) findPreference(mDispCalSwitchPref);
-            FileInputStream sysfsFile = new FileInputStream(SYSFS_FB_PCC_PROFILE);
-            BufferedReader fileReader = new BufferedReader(
-                    new InputStreamReader(sysfsFile));
             curDispCal = fileReader.readLine();
 
             if (curDispCal == null) {
@@ -512,9 +504,8 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
 
     /* WARNING: Be careful! This function is called at PRE_BOOT_COMPLETED stage! */
     protected static boolean performDisplayCalibration(int calId) {
-        try {
-            FileWriter sysfsFile = new FileWriter(SYSFS_FB_PCC_PROFILE);
-            BufferedWriter writer = new BufferedWriter(sysfsFile);
+        try (FileWriter sysfsFile = new FileWriter(SYSFS_FB_PCC_PROFILE);
+             BufferedWriter writer = new BufferedWriter(sysfsFile)) {
             String calIdStr = Integer.toString(calId);
 
             writer.write(calIdStr + '\n');
