@@ -237,14 +237,18 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
 
         findPreference(m8MPSwitchPref).setOnPreferenceChangeListener(mPreferenceListener);
         findPreference(mCameraAltAct).setOnPreferenceChangeListener(mPreferenceListener);
-        findPreference(mSleepSwitchPref).setOnPreferenceChangeListener(mPreferenceListener);
+        if (android.os.Build.DEVICE == "kagura") {
+            findPreference(mSleepSwitchPref).setOnPreferenceChangeListener(mPreferenceListener);
+        }
         findPreference(mADBOverNetworkSwitchPref).setOnPreferenceChangeListener(mPreferenceListener);
         mFragmentManager = getFragmentManager();
         mPrefEditor = PreferenceManager.getDefaultSharedPreferences(getContext()).edit();
 
         loadPref(m8MPSwitchPref, PREF_8MP_23MP_ENABLED);
         loadPref(mCameraAltAct, PREF_CAMERA_ALT_ACT);
-        loadPref(mSleepSwitchPref, PREF_NEVERSLEEP);
+        if (android.os.Build.DEVICE == "kagura") {
+            loadPref(mSleepSwitchPref, PREF_NEVERSLEEP);
+        }
 
         int ret = initializeDRSListPreference();
         if (ret == 0) {
