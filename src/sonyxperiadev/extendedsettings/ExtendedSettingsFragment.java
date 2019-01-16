@@ -34,6 +34,8 @@ import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import sonyxperiadev.extendedsettings.SleepControl;
+
 
 /**
  * A {@link PreferenceFragment} that presents a set of application settings. On
@@ -62,8 +64,6 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
     private static final String m8MPSwitchPref = "8mp_switch";
     private static final String mCameraAltAct = "alt_act_switch";
     protected static final String mSleepSwitchPref = "sleep_switch";
-    protected static final String PREF_NEVERSLEEP = "persist.vendor.neversleep";
-    protected static final String PREF_NEVERSLEEP_TRIGGER = "persist.vendor.neversleep.trigger";
     protected static final String mADBOverNetworkSwitchPref = "adbon_switch";
     protected static final String mDynamicResolutionSwitchPref = "dynres_list_switch";
     protected static final String mDispCalSwitchPref = "dispcal_list_switch";
@@ -198,10 +198,11 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
                     confirmRebootChange();
                     break;
                 case mSleepSwitchPref:
-                    // Set the preference
-                    SystemProperties.set(PREF_NEVERSLEEP, String.valueOf((Boolean) value));
-                    // And trigger the wake_lock/unlock
-                    SystemProperties.set(PREF_NEVERSLEEP_TRIGGER, String.valueOf((Boolean) value));
+                    if ((Boolean) value) {
+                        SleepControl.setSleep(false);
+                    } else {
+                        SleepControl.setSleep(true);
+                    }
                     break;
                 case mADBOverNetworkSwitchPref:
                     if ((Boolean) value) {
@@ -237,18 +238,16 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
 
         findPreference(m8MPSwitchPref).setOnPreferenceChangeListener(mPreferenceListener);
         findPreference(mCameraAltAct).setOnPreferenceChangeListener(mPreferenceListener);
-        if (android.os.Build.DEVICE == "kagura") {
-            findPreference(mSleepSwitchPref).setOnPreferenceChangeListener(mPreferenceListener);
-        }
+        //if (android.os.Build.DEVICE == "kagura") {
+        findPreference(mSleepSwitchPref).setOnPreferenceChangeListener(mPreferenceListener);
         findPreference(mADBOverNetworkSwitchPref).setOnPreferenceChangeListener(mPreferenceListener);
         mFragmentManager = getFragmentManager();
         mPrefEditor = PreferenceManager.getDefaultSharedPreferences(getContext()).edit();
 
         loadPref(m8MPSwitchPref, PREF_8MP_23MP_ENABLED);
         loadPref(mCameraAltAct, PREF_CAMERA_ALT_ACT);
-        if (android.os.Build.DEVICE == "kagura") {
-            loadPref(mSleepSwitchPref, PREF_NEVERSLEEP);
-        }
+        //if (android.os.Build.DEVICE == "kagura") {
+        loadPref(mSleepSwitchPref, SleepControl.PERSIST_NEVERSLEEP_PROP);
 
         int ret = initializeDRSListPreference();
         if (ret == 0) {

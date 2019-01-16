@@ -11,6 +11,10 @@ import android.util.Log;
 import static android.app.admin.DevicePolicyManager.ENCRYPTION_STATUS_ACTIVATING;
 import static android.app.admin.DevicePolicyManager.ENCRYPTION_STATUS_INACTIVE;
 import static android.app.admin.DevicePolicyManager.ENCRYPTION_STATUS_UNSUPPORTED;
+
+import sonyxperiadev.extendedsettings.SleepControl;
+
+
 /**
  * This will be executed after the core system has been initialized,
  * along with providers. This means that any dependency on any system
@@ -56,5 +60,15 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
             Log.wtf(TAG, "Please report this error immediately by opening a new issue on GitHub.\n" +
                     "--- https://git.io/vduAF --- Thank you!", t);
         }
+
+        restoreSleepState();
     }
+
+
+    private static void restoreSleepState() {
+        // "neversleep" == false -> Deep sleep enabled. Default is to enable sleep.
+        boolean sleepEnabled = !SystemProperties.getBoolean(SleepControl.PERSIST_NEVERSLEEP_PROP, false);
+        SleepControl.setSleep(sleepEnabled);
+    }
+
 }
