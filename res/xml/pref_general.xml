@@ -30,4 +30,10 @@
         android:title="@string/pref_title_dispcal_switch"
         android:summary="Current calibration:"/>
 
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="sleep_switch"
+        android:title="@string/pref_title_sleep_switch"
+        android:summary="@string/pref_description_sleepswitch"/>
+
 </PreferenceScreen>

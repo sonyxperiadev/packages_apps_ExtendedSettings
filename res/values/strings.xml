@@ -13,6 +13,8 @@
     <string name="pref_title_8mp">Enable 8MP mode</string>
     <string name="pref_title_alt_act">Use alternate actuator</string>
     <string name="pref_description_alt_act">On some tablets we have a different actuator, change this settings if you\'re experiencing issues.</string>
+    <string name="pref_title_sleep_switch">Disable Deep Sleep</string>
+    <string name="pref_description_sleepswitch">Prevent the device from entering Deep Sleep</string>
     <string name="dialog_reboot_required">Reboot required</string>
     <string name="dialog_reboot_required_summary">A reboot is required for the changes to take effect!</string>
     <string name="reboot_now">Reboot now</string>
