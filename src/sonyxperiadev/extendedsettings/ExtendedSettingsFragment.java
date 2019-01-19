@@ -235,15 +235,21 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
         loadPref(m8MPSwitchPref, PREF_8MP_23MP_ENABLED);
         loadPref(mCameraAltAct, PREF_CAMERA_ALT_ACT);
 
-        int ret = initializeDRSListPreference();
+        ListPreference drsSwitchPref = (ListPreference) findPreference(mDynamicResolutionSwitchPref);
+        int ret = initializeDRSListPreference(drsSwitchPref);
         if (ret == 0) {
-            findPreference(mDynamicResolutionSwitchPref).setOnPreferenceChangeListener(mPreferenceListener);
+            drsSwitchPref.setOnPreferenceChangeListener(mPreferenceListener);
         } else {
-            getPreferenceScreen().removePreference(findPreference(mDynamicResolutionSwitchPref));
+            getPreferenceScreen().removePreference(drsSwitchPref);
         }
 
-        initializeDispCalListPreference();
-        findPreference(mDispCalSwitchPref).setOnPreferenceChangeListener(mPreferenceListener);
+        ListPreference dispCalSwitchPref = (ListPreference) findPreference(mDispCalSwitchPref);
+        ret = initializeDispCalListPreference(dispCalSwitchPref);
+        if (ret == 0) {
+            dispCalSwitchPref.setOnPreferenceChangeListener(mPreferenceListener);
+        } else {
+            getPreferenceScreen().removePreference(dispCalSwitchPref);
+        }
 
         mUserManager = mFragment.getContext().getSystemService(UserManager.class);
         if (mUserManager.hasUserRestriction(UserManager.DISALLOW_DEBUGGING_FEATURES)) {
@@ -376,9 +382,7 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
         return i;
     }
 
-    protected int initializeDRSListPreference() {
-        ListPreference resPref = (ListPreference) findPreference(mDynamicResolutionSwitchPref);
-
+    protected int initializeDRSListPreference(ListPreference resPref) {
         sDp = sysfs_readResolutions();
 
         CharSequence[] entries = new CharSequence[sDp.size()];
@@ -469,13 +473,12 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
         /* ToDo: Set nobootanimation back to 0 after SF restart */
     }
 
-    protected void initializeDispCalListPreference() {
+    protected int initializeDispCalListPreference(ListPreference resPref) {
         String curDispCal;
         int i;
 
         try (FileReader sysfsFile = new FileReader(SYSFS_FB_PCC_PROFILE);
              BufferedReader fileReader = new BufferedReader(sysfsFile)) {
-            ListPreference resPref = (ListPreference) findPreference(mDispCalSwitchPref);
             curDispCal = fileReader.readLine();
 
             if (curDispCal == null) {
@@ -497,9 +500,11 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
 
             resPref.setSummary(dispCal.getElementName(Integer.parseInt(curDispCal)));
 
+            return 0;
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return -1;
     }
 
     /* WARNING: Be careful! This function is called at PRE_BOOT_COMPLETED stage! */
