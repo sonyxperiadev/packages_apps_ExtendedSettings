@@ -26,6 +26,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.FileNotFoundException;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -52,7 +53,8 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
 
     protected static final String SYSFS_FB_MODES = "/sys/devices/virtual/graphics/fb0/modes";
     protected static final String SYSFS_FB_MODESET = "/sys/devices/virtual/graphics/fb0/mode";
-    protected static final String SYSFS_FB_PCC_PROFILE = "/sys/devices/mdss_dsi_panel/pcc_profile";
+    protected static final String[] SYSFS_DISPLAY_FOLDERS = new String[]{ "mdss_dsi_panel", "dsi_panel_driver" };
+    protected static final String SYSFS_PCC_PROFILE = "/sys/devices/%s/pcc_profile";
 
     protected static final String PREF_8MP_23MP_ENABLED = "persist.camera.8mp.config";
     protected static final String PREF_DISPCAL_SETTING = "persist.dispcal.setting";
@@ -476,50 +478,57 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
         String curDispCal;
         int i;
 
-        try (FileReader sysfsFile = new FileReader(SYSFS_FB_PCC_PROFILE);
-             BufferedReader fileReader = new BufferedReader(sysfsFile)) {
-            curDispCal = fileReader.readLine();
+        for (String displayFolder : SYSFS_DISPLAY_FOLDERS) {
+            try (FileReader sysfsFile = new FileReader(String.format(SYSFS_PCC_PROFILE, displayFolder));
+                 BufferedReader fileReader = new BufferedReader(sysfsFile)) {
+                curDispCal = fileReader.readLine();
 
-            if (curDispCal == null) {
-                curDispCal = new String("Unavailable");
+                if (curDispCal == null) {
+                    curDispCal = new String("Unavailable");
+                }
+
+                CharSequence[] entries = new CharSequence[dispCal.lastElement()];
+                CharSequence[] entryValues = new CharSequence[dispCal.lastElement()];
+                for (i = 0; i < dispCal.lastElement(); i++) {
+                    entries[i] = dispCal.getElementName(i);
+                    entryValues[i] = Integer.toString(i);
+                }
+
+                resPref.setEntries(entries);
+                resPref.setEntryValues(entryValues);
+
+                resPref.setDefaultValue(dispCal.getElementName(Integer.parseInt(curDispCal)));
+                resPref.setValueIndex(Integer.parseInt(curDispCal));
+
+                resPref.setSummary(dispCal.getElementName(Integer.parseInt(curDispCal)));
+
+                return 0;
+            } catch (FileNotFoundException ignored) {
+                // Ignored: Try next file
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-
-            CharSequence[] entries = new CharSequence[dispCal.lastElement()];
-            CharSequence[] entryValues = new CharSequence[dispCal.lastElement()];
-            for (i = 0; i < dispCal.lastElement(); i++) {
-                entries[i] = dispCal.getElementName(i);
-                entryValues[i] = Integer.toString(i);
-            }
-
-            resPref.setEntries(entries);
-            resPref.setEntryValues(entryValues);
-
-            resPref.setDefaultValue(dispCal.getElementName(Integer.parseInt(curDispCal)));
-            resPref.setValueIndex(Integer.parseInt(curDispCal));
-
-            resPref.setSummary(dispCal.getElementName(Integer.parseInt(curDispCal)));
-
-            return 0;
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return -1;
     }
 
     /* WARNING: Be careful! This function is called at PRE_BOOT_COMPLETED stage! */
     protected static boolean performDisplayCalibration(int calId) {
-        try (FileWriter sysfsFile = new FileWriter(SYSFS_FB_PCC_PROFILE);
-             BufferedWriter writer = new BufferedWriter(sysfsFile)) {
-            String calIdStr = Integer.toString(calId);
+        for (String displayFolder : SYSFS_DISPLAY_FOLDERS) {
+            try (FileWriter sysfsFile = new FileWriter(String.format(SYSFS_PCC_PROFILE, displayFolder));
+                 BufferedWriter writer = new BufferedWriter(sysfsFile)) {
+                String calIdStr = Integer.toString(calId);
 
-            writer.write(calIdStr + '\n');
+                writer.write(calIdStr + '\n');
 
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            return false;
+                return true;
+            } catch (FileNotFoundException ignored) {
+                // Ignored: Try next file
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+        return false;
     }
 
     private static void confirmPerformDRS(int resId) {
