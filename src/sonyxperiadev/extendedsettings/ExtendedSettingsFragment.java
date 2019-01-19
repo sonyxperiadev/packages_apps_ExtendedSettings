@@ -419,7 +419,6 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
             SystemProperties.set("ctl.stop", "surfaceflinger");
 
             writer.write(modeString + '\n');
-            writer.close();
 
             SystemProperties.set("ctl.start", "surfaceflinger");
         } catch (Exception e) {
@@ -514,7 +513,6 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
             String calIdStr = Integer.toString(calId);
 
             writer.write(calIdStr + '\n');
-            writer.close();
 
             return true;
         } catch (Exception e) {
