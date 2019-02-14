@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">Extended settings</string>
+    <string name="app_name">附加设置</string>
 
     <!-- Strings related to Settings -->
-    <string name="pref_description_adbonswitch">启用TCP/IP调试 (Wi\u2011Fi USB 网络)。 此设置重启后将复位。</string>
+    <string name="pref_description_adbonswitch">启用网络ADB调试 (WiFi或USB网络)。 此设置重启后将复位。</string>
     <string name="pref_description_adbonswitchdialog">警告：启用网络ADB调试后，您的手机将对局域网所有设备开放，可能会被入侵！\n\n请仅在连接可信任的网络时开启此选项。\n\n您仍要启用此功能吗？</string>
     <string name="pref_title_adbonswitch">网络ADB调试</string>
     <string name="error_connect_to_wifi">错误: 您需要连接到WiFi！</string>
@@ -10,8 +10,8 @@
     <string name="pref_title_8mp">仅启用800万像素</string>
     <string name="pref_title_alt_act">使用备用执行器</string>
     <string name="pref_description_alt_act">在一些平板电脑上我们使用了与手机不同的执行器，如果你遇到了问题，请开启此选项。</string>
-    <string name="dialog_reboot_required">等待重启</string>
-    <string name="dialog_reboot_required_summary">设备需要重启以使配置生效！</string>
+    <string name="dialog_reboot_required">需要重启</string>
+    <string name="dialog_reboot_required_summary">设备需要重启以使更改生效！</string>
     <string name="reboot_now">立即重启</string>
     <string name="reboot_later">稍后重启</string>
     <string name="enable">确定</string>
