@@ -57,8 +57,8 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
     protected static final String SYSFS_PCC_PROFILE = "/sys/devices/%s/pcc_profile";
 
     protected static final String PREF_8MP_23MP_ENABLED = "persist.camera.8mp.config";
-    protected static final String PREF_DISPCAL_SETTING = "persist.dispcal.setting";
-    protected static final String PREF_ADB_NETWORK_COM = "adb.network.port.es";
+    protected static final String PREF_DISPCAL_SETTING = "persist.vendor.dispcal.setting";
+    protected static final String PREF_ADB_NETWORK_COM = "vendor.adb.network.port.es";
     private static final String PREF_ADB_NETWORK_READ = "service.adb.tcp.port";
     private static final String PREF_CAMERA_ALT_ACT = "persist.camera.alt.act";
     private static final String m8MPSwitchPref = "8mp_switch";
