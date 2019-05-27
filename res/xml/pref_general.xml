@@ -13,7 +13,7 @@
         android:summary="Current resolution:"/>
 
     <ListPreference
-        android:defaultValue="1"
+        android:defaultValue="0"
         android:key="dispcal_list_switch"
         android:title="@string/pref_title_dispcal_switch"
         android:summary="Current calibration:"/>

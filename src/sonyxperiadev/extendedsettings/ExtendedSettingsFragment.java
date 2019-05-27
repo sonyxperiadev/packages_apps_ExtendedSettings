@@ -95,18 +95,7 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
         }
 
         public static String getElementName(dispCal elm) {
-            switch (elm) {
-                case PANEL_CALIB_6000K:
-                    return "6000K";
-                case PANEL_CALIB_F6:
-                    return "F6: 4150K";
-                case PANEL_CALIB_D50:
-                    return "D50: 5000K";
-                case PANEL_CALIB_D65:
-                    return "D65: 6500K";
-                default:
-                    return "ERROR: UNKNOWN";
-            }
+            return getElementName(elm.val);
         }
 
         public static String getElementName(int elm) {
@@ -474,21 +463,16 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
     }
 
     protected int initializeDispCalListPreference(ListPreference resPref) {
-        String curDispCal;
-        int i;
-
         for (String displayFolder : SYSFS_DISPLAY_FOLDERS) {
             try (FileReader sysfsFile = new FileReader(String.format(SYSFS_PCC_PROFILE, displayFolder));
                  BufferedReader fileReader = new BufferedReader(sysfsFile)) {
-                curDispCal = fileReader.readLine();
-
-                if (curDispCal == null) {
-                    curDispCal = new String("Unavailable");
-                }
+                // "Current" sysfs value is not persisted and will be 0 after a reboot.
+                // The file is only checked to make sure pcc profile selection is available.
+                // final String curDispCal = fileReader.readLine();
 
                 CharSequence[] entries = new CharSequence[dispCal.lastElement()];
                 CharSequence[] entryValues = new CharSequence[dispCal.lastElement()];
-                for (i = 0; i < dispCal.lastElement(); i++) {
+                for (int i = 0; i < dispCal.lastElement(); i++) {
                     entries[i] = dispCal.getElementName(i);
                     entryValues[i] = Integer.toString(i);
                 }
@@ -496,9 +480,8 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
                 resPref.setEntries(entries);
                 resPref.setEntryValues(entryValues);
 
-                resPref.setDefaultValue(dispCal.getElementName(Integer.parseInt(curDispCal)));
-                resPref.setValueIndex(Integer.parseInt(curDispCal));
-
+                // Retrieve current value from persisted storage:
+                final String curDispCal = resPref.getValue();
                 resPref.setSummary(dispCal.getElementName(Integer.parseInt(curDispCal)));
 
                 return 0;
