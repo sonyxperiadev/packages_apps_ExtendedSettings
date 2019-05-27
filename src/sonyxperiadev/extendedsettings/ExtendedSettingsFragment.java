@@ -56,7 +56,6 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
     protected static final String[] SYSFS_DISPLAY_FOLDERS = new String[]{ "mdss_dsi_panel", "dsi_panel_driver" };
     protected static final String SYSFS_PCC_PROFILE = "/sys/devices/%s/pcc_profile";
 
-    protected static final String PREF_DISPCAL_SETTING = "persist.vendor.dispcal.setting";
     protected static final String PREF_ADB_NETWORK_COM = "vendor.adb.network.port.es";
     private static final String PREF_ADB_NETWORK_READ = "service.adb.tcp.port";
     protected static final String mADBOverNetworkSwitchPref = "adbon_switch";
@@ -199,7 +198,6 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
                     int newDispCal = Integer.parseInt((String) value);
                     boolean performed = performDisplayCalibration(newDispCal);
                     if (performed) {
-                        SystemProperties.set(PREF_DISPCAL_SETTING, (String) value);
                         updateDispCalPreference(newDispCal);
                     }
                     break;
