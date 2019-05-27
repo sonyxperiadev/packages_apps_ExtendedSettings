@@ -51,21 +51,21 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
 
     private static final String TAG = "ExtendedSettings";
 
-    protected static final String SYSFS_FB_MODES = "/sys/devices/virtual/graphics/fb0/modes";
-    protected static final String SYSFS_FB_MODESET = "/sys/devices/virtual/graphics/fb0/mode";
-    protected static final String[] SYSFS_DISPLAY_FOLDERS = new String[]{ "mdss_dsi_panel", "dsi_panel_driver" };
-    protected static final String SYSFS_PCC_PROFILE = "/sys/devices/%s/pcc_profile";
+    private static final String SYSFS_FB_MODES = "/sys/devices/virtual/graphics/fb0/modes";
+    private static final String SYSFS_FB_MODESET = "/sys/devices/virtual/graphics/fb0/mode";
+    private static final String[] SYSFS_DISPLAY_FOLDERS = new String[]{ "mdss_dsi_panel", "dsi_panel_driver" };
+    private static final String SYSFS_PCC_PROFILE = "/sys/devices/%s/pcc_profile";
 
-    protected static final String PREF_ADB_NETWORK_COM = "vendor.adb.network.port.es";
+    static final String PREF_ADB_NETWORK_COM = "vendor.adb.network.port.es";
     private static final String PREF_ADB_NETWORK_READ = "service.adb.tcp.port";
-    protected static final String mADBOverNetworkSwitchPref = "adbon_switch";
-    protected static final String mDynamicResolutionSwitchPref = "dynres_list_switch";
-    protected static final String mDispCalSwitchPref = "dispcal_list_switch";
+    private static final String mADBOverNetworkSwitchPref = "adbon_switch";
+    private static final String mDynamicResolutionSwitchPref = "dynres_list_switch";
+    static final String mDispCalSwitchPref = "dispcal_list_switch";
 
     private static final int BUILT_IN_DISPLAY_ID_MAIN = 0;
 
     private static FragmentManager mFragmentManager;
-    protected static PreferenceFragment mFragment;
+    static PreferenceFragment mFragment;
     private SharedPreferences.Editor mPrefEditor;
     private UserManager mUserManager;
 
