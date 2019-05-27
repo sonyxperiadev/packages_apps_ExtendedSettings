@@ -57,7 +57,8 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
     private static final String SYSFS_FB_MODESET = "/sys/devices/virtual/graphics/fb0/mode";
     private static final String[] SYSFS_DISPLAY_FOLDERS = new String[]{ "mdss_dsi_panel", "dsi_panel_driver" };
     private static final String SYSFS_PCC_PROFILE = "/sys/devices/%s/pcc_profile";
-    private static final String SYSFS_TOUCH_GLOVE_MODE = "/sys/devices/virtual/input/lge_touch/glove_mode";
+    private static final String[] SYSFS_GLOVE_MODE_PATHS = new String[]{ "lge_touch/glove_mode", "clearpad/glove" };
+    private static final String SYSFS_TOUCH_GLOVE_MODE = "/sys/devices/virtual/input/%s";
 
     static final String PREF_ADB_NETWORK_COM = "vendor.adb.network.port.es";
     private static final String PREF_ADB_NETWORK_READ = "service.adb.tcp.port";
@@ -587,32 +588,45 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
     }
 
     static void performGloveMode(boolean enabled) {
-        Log.i(TAG, "Setting glove mode to " + enabled);
-        try (FileWriter sysfsFile = new FileWriter(SYSFS_TOUCH_GLOVE_MODE);
-                BufferedWriter writer = new BufferedWriter(sysfsFile)) {
+        for (String glovePath : SYSFS_GLOVE_MODE_PATHS) {
+            try (FileWriter sysfsFile = new FileWriter(String.format(SYSFS_TOUCH_GLOVE_MODE, glovePath));
+                    BufferedWriter writer = new BufferedWriter(sysfsFile)) {
 
-            final String enabledString = enabled ? "1" : "0";
+                Log.i(TAG, "Setting glove mode to " + enabled);
 
-            writer.write(enabledString + '\n');
-        } catch (IOException e) {
-            e.printStackTrace();
+                final String enabledString = enabled ? "1" : "0";
+
+                writer.write(enabledString + '\n');
+            } catch (FileNotFoundException ignored) {
+                // Ignored: Try next file
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     static boolean isGloveModeEnabled() {
-        try (FileReader sysfsFile = new FileReader(SYSFS_TOUCH_GLOVE_MODE);
-                BufferedReader fileReader = new BufferedReader(sysfsFile)) {
-            final String line = fileReader.readLine();
-            return "1".equals(line);
-        } catch (IOException e) {
-            e.printStackTrace();
+        for (String glovePath : SYSFS_GLOVE_MODE_PATHS) {
+            try (FileReader sysfsFile = new FileReader(String.format(SYSFS_TOUCH_GLOVE_MODE, glovePath));
+                    BufferedReader fileReader = new BufferedReader(sysfsFile)) {
+                final String line = fileReader.readLine();
+                return "1".equals(line);
+            } catch (FileNotFoundException ignored) {
+                // Ignored: Try next file
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return false;
     }
 
     private static boolean hasGloveMode() {
-        final File sysfsFile = new File(SYSFS_TOUCH_GLOVE_MODE);
-        return sysfsFile.isFile();
+        for (String glovePath : SYSFS_GLOVE_MODE_PATHS) {
+            final File sysfsFile = new File(String.format(SYSFS_TOUCH_GLOVE_MODE, glovePath));
+            if (sysfsFile.isFile())
+                return true;
+        }
+        return false;
     }
 
     private static boolean isNumeric(String str) {
