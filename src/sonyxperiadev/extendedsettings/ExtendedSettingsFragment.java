@@ -1,9 +1,11 @@
 package sonyxperiadev.extendedsettings;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.wifi.WifiManager;
@@ -11,6 +13,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemProperties;
 import android.os.UserManager;
+import android.provider.Settings;
 import android.support.v14.preference.PreferenceFragment;
 import android.support.v14.preference.SwitchPreference;
 import android.support.v7.preference.ListPreference;
@@ -184,7 +187,7 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
      */
-    private static Preference.OnPreferenceChangeListener mPreferenceListener = new Preference.OnPreferenceChangeListener() {
+    private Preference.OnPreferenceChangeListener mPreferenceListener = new Preference.OnPreferenceChangeListener() {
         @Override
         public boolean onPreferenceChange(Preference preference, Object value) {
             switch (preference.getKey()) {
@@ -207,7 +210,7 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
                     }
                     break;
                 case mGloveModeSwitchPref:
-                    performGloveMode((Boolean)value);
+                    onGloveModePreferenceChanged((Boolean)value);
                     break;
                 default:
                     break;
@@ -585,6 +588,28 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
             // Set the switch state accordingly to the Preference
             mAdbOverNetwork.setChecked(false);
         }
+    }
+
+    void onGloveModePreferenceChanged(boolean enabled) {
+        final int message_text_id = enabled ? R.string.dialog_enable_glove_mode : R.string.dialog_disable_glove_mode;
+        final SwitchPreference gloveModePref = (SwitchPreference) findPreference(mGloveModeSwitchPref);
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(message_text_id)
+            .setTitle(R.string.warning)
+            .setPositiveButton(android.R.string.ok, (DialogInterface dialog, int id) -> {
+                // Enable SHOW_TOUCHES to make the user aware of this
+                // feature being enabled.
+                Settings.System.putInt(getContext().getContentResolver(), Settings.System.SHOW_TOUCHES, enabled ? 1 : 0);
+
+                performGloveMode(enabled);
+            })
+
+            // Restore switch and underlying preference:
+            .setNegativeButton(android.R.string.cancel, (DialogInterface dialog, int id) -> gloveModePref.setChecked(!enabled))
+            .setOnCancelListener((DialogInterface dialog) -> gloveModePref.setChecked(!enabled))
+
+            .show();
     }
 
     static void performGloveMode(boolean enabled) {
