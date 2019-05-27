@@ -18,4 +18,10 @@
         android:title="@string/pref_title_dispcal_switch"
         android:summary="Current calibration:"/>
 
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="glove_mode_switch"
+        android:title="@string/pref_title_glove_mode_switch"
+        android:summary="@string/pref_title_glove_mode_switch_summary"/>
+
 </PreferenceScreen>

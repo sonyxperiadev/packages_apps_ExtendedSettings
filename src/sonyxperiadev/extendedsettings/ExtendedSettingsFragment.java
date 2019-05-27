@@ -27,6 +27,8 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.File;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -55,12 +57,14 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
     private static final String SYSFS_FB_MODESET = "/sys/devices/virtual/graphics/fb0/mode";
     private static final String[] SYSFS_DISPLAY_FOLDERS = new String[]{ "mdss_dsi_panel", "dsi_panel_driver" };
     private static final String SYSFS_PCC_PROFILE = "/sys/devices/%s/pcc_profile";
+    private static final String SYSFS_TOUCH_GLOVE_MODE = "/sys/devices/virtual/input/lge_touch/glove_mode";
 
     static final String PREF_ADB_NETWORK_COM = "vendor.adb.network.port.es";
     private static final String PREF_ADB_NETWORK_READ = "service.adb.tcp.port";
     private static final String mADBOverNetworkSwitchPref = "adbon_switch";
     private static final String mDynamicResolutionSwitchPref = "dynres_list_switch";
     static final String mDispCalSwitchPref = "dispcal_list_switch";
+    static final String mGloveModeSwitchPref = "glove_mode_switch";
 
     private static final int BUILT_IN_DISPLAY_ID_MAIN = 0;
 
@@ -201,6 +205,9 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
                         updateDispCalPreference(newDispCal);
                     }
                     break;
+                case mGloveModeSwitchPref:
+                    performGloveMode((Boolean)value);
+                    break;
                 default:
                     break;
             }
@@ -232,6 +239,13 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
             dispCalSwitchPref.setOnPreferenceChangeListener(mPreferenceListener);
         } else {
             getPreferenceScreen().removePreference(dispCalSwitchPref);
+        }
+
+        final SwitchPreference gloveModeSwitchPref = (SwitchPreference) findPreference(mGloveModeSwitchPref);
+        if (hasGloveMode()) {
+            gloveModeSwitchPref.setOnPreferenceChangeListener(mPreferenceListener);
+        } else {
+            getPreferenceScreen().removePreference(gloveModeSwitchPref);
         }
 
         mUserManager = mFragment.getContext().getSystemService(UserManager.class);
@@ -570,6 +584,35 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
             // Set the switch state accordingly to the Preference
             mAdbOverNetwork.setChecked(false);
         }
+    }
+
+    static void performGloveMode(boolean enabled) {
+        Log.i(TAG, "Setting glove mode to " + enabled);
+        try (FileWriter sysfsFile = new FileWriter(SYSFS_TOUCH_GLOVE_MODE);
+                BufferedWriter writer = new BufferedWriter(sysfsFile)) {
+
+            final String enabledString = enabled ? "1" : "0";
+
+            writer.write(enabledString + '\n');
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    static boolean isGloveModeEnabled() {
+        try (FileReader sysfsFile = new FileReader(SYSFS_TOUCH_GLOVE_MODE);
+                BufferedReader fileReader = new BufferedReader(sysfsFile)) {
+            final String line = fileReader.readLine();
+            return "1".equals(line);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private static boolean hasGloveMode() {
+        final File sysfsFile = new File(SYSFS_TOUCH_GLOVE_MODE);
+        return sysfsFile.isFile();
     }
 
     private static boolean isNumeric(String str) {

@@ -9,6 +9,8 @@
     <string name="pref_title_dynres_switch">Risoluzione Display</string>
     <string name="pref_title_dispcal_switch">Calibrazione Bianco del Display</string>
     <string name="error_connect_to_wifi">Errore: Devi essere collegato su una rete Wi-Fi!</string>
+    <string name="pref_title_glove_mode_switch">Modalità guanti</string>
+    <string name="pref_title_glove_mode_switch_summary">Rende il touchscreen più sensibile al tocco</string>
     <string name="dialog_reboot_required">Riavvio richiesto</string>
     <string name="dialog_reboot_required_summary">Un riavvio è necessario perchè le modifiche abbiano effetto!</string>
     <string name="reboot_now">Riavvia ora</string>

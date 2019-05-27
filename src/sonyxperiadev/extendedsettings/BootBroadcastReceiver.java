@@ -52,6 +52,8 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
             final String dispCal = prefs.getString(ExtendedSettingsFragment.mDispCalSwitchPref, "0");
 
             ExtendedSettingsFragment.performDisplayCalibration(Integer.parseInt(dispCal));
+            ExtendedSettingsFragment
+                    .performGloveMode(prefs.getBoolean(ExtendedSettingsFragment.mGloveModeSwitchPref, false));
         } catch (Throwable t) {
             Log.wtf(TAG, "We have crashed. THIS IS AN HORRENDOUS BUG!");
             Log.wtf(TAG, "Please report this error immediately by opening a new issue on GitHub.\n" +

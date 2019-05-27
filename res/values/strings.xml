@@ -8,7 +8,9 @@
     <string name="pref_description_drsdialog">Dynamic Resolution Switch needs to restart the UI.\n\nDo you want to continue?</string>
     <string name="pref_title_dynres_switch">Dynamic Resolution Switch</string>
     <string name="pref_title_dispcal_switch">Display white point calibration</string>
-    <string name="error_connect_to_wifi">Error: You need to be connected to a WiFi!</string>
+    <string name="error_connect_to_wifi">Error: You need to be connected to a WiFi network!</string>
+    <string name="pref_title_glove_mode_switch">Glove mode</string>
+    <string name="pref_title_glove_mode_switch_summary">Increase touchscreen sensitivity</string>
     <string name="dialog_reboot_required">Reboot required</string>
     <string name="dialog_reboot_required_summary">A reboot is required for the changes to take effect!</string>
     <string name="reboot_now">Reboot now</string>
