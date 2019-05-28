@@ -8,8 +8,6 @@
     <string name="pref_description_drsdialog">Dynamic Resolution Switch muss die UI neustarten.\n\nMöchten sie fortfahren?</string>
     <string name="pref_title_dynres_switch">Dynamic Resolution Switch</string>
     <string name="error_connect_to_wifi">Error: W-LAN muss aktiviert sein!</string>
-    <string name="pref_title_alt_act">Alternativen Aktuator nutzen</string>
-    <string name="pref_description_alt_act">Manche Tablets nutzen einen anderen Aktuator. Ändern sie diesen Wert, wenn sie Probleme haben.</string>
     <string name="dialog_reboot_required">Neustart erforderlich</string>
     <string name="dialog_reboot_required_summary">Ein Neustart ist erforderlich, um die Änderungen anzuwenden!</string>
     <string name="reboot_now">Jetzt Neustarten</string>

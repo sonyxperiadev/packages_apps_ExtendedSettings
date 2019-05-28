@@ -10,8 +10,6 @@
   <string name="pref_title_dispcal_switch">Калибровка баланса белого</string>
   <string name="pref_title_adbonswitch">Отладка по сети</string>
   <string name="error_connect_to_wifi">Ошибка: Вы должны быть подключены к Сети!</string>
-  <string name="pref_title_alt_act">Использовать альтернативный датчик</string>
-  <string name="pref_description_alt_act">На некоторых планшетах установлен другой датчик, измените эту настройку, если у вас есть проблемы.</string>
   <string name="dialog_reboot_required">Требуется перезагрузка</string>
   <string name="dialog_reboot_required_summary">Перезагрузка необходима для того, чтобы изменения вступили в силу!</string>
   <string name="reboot_now">Перезагрузить сейчас</string>

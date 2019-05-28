@@ -9,8 +9,6 @@
     <string name="pref_title_dynres_switch">显示设置</string>
     <string name="pref_title_dispcal_switch">白平衡设置</string>
     <string name="error_connect_to_wifi">错误: 您需要连接到WiFi！</string>
-    <string name="pref_title_alt_act">使用备用执行器</string>
-    <string name="pref_description_alt_act">在一些平板电脑上我们使用了与手机不同的执行器，如果你遇到了问题，请开启此选项。</string>
     <string name="dialog_reboot_required">需要重启</string>
     <string name="dialog_reboot_required_summary">设备需要重启以使更改生效！</string>
     <string name="reboot_now">立即重启</string>
