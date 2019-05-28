@@ -10,8 +10,9 @@ import android.os.PowerManager;
 
 /**
  * Created by myself5 on 9/6/16.
- * Dialog changing 8MP Mode
- * Base on Googles fire missile dialog
+ * Based on Googles fire missile dialog
+ * Originally for applying the 8MP camera setting and currently unused, but
+ * might come in handy again
  */
 public class confirmRebootChangeDialog extends DialogFragment {
     @Override

@@ -56,13 +56,9 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
     protected static final String[] SYSFS_DISPLAY_FOLDERS = new String[]{ "mdss_dsi_panel", "dsi_panel_driver" };
     protected static final String SYSFS_PCC_PROFILE = "/sys/devices/%s/pcc_profile";
 
-    protected static final String PREF_8MP_23MP_ENABLED = "persist.camera.8mp.config";
     protected static final String PREF_DISPCAL_SETTING = "persist.vendor.dispcal.setting";
     protected static final String PREF_ADB_NETWORK_COM = "vendor.adb.network.port.es";
     private static final String PREF_ADB_NETWORK_READ = "service.adb.tcp.port";
-    private static final String PREF_CAMERA_ALT_ACT = "persist.camera.alt.act";
-    private static final String m8MPSwitchPref = "8mp_switch";
-    private static final String mCameraAltAct = "alt_act_switch";
     protected static final String mADBOverNetworkSwitchPref = "adbon_switch";
     protected static final String mDynamicResolutionSwitchPref = "dynres_list_switch";
     protected static final String mDispCalSwitchPref = "dispcal_list_switch";
@@ -188,14 +184,6 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
         @Override
         public boolean onPreferenceChange(Preference preference, Object value) {
             switch (preference.getKey()) {
-                case m8MPSwitchPref:
-                    SystemProperties.set(PREF_8MP_23MP_ENABLED, String.valueOf((Boolean) value));
-                    confirmRebootChange();
-                    break;
-                case mCameraAltAct:
-                    SystemProperties.set(PREF_CAMERA_ALT_ACT, String.valueOf((Boolean) value));
-                    confirmRebootChange();
-                    break;
                 case mADBOverNetworkSwitchPref:
                     if ((Boolean) value) {
                         confirmEnablingADBON();
@@ -228,14 +216,9 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
         mFragment = this;
         addPreferencesFromResource(R.xml.pref_general);
 
-        findPreference(m8MPSwitchPref).setOnPreferenceChangeListener(mPreferenceListener);
-        findPreference(mCameraAltAct).setOnPreferenceChangeListener(mPreferenceListener);
         findPreference(mADBOverNetworkSwitchPref).setOnPreferenceChangeListener(mPreferenceListener);
         mFragmentManager = getFragmentManager();
         mPrefEditor = PreferenceManager.getDefaultSharedPreferences(getContext()).edit();
-
-        loadPref(m8MPSwitchPref, PREF_8MP_23MP_ENABLED);
-        loadPref(mCameraAltAct, PREF_CAMERA_ALT_ACT);
 
         ListPreference drsSwitchPref = (ListPreference) findPreference(mDynamicResolutionSwitchPref);
         int ret = initializeDRSListPreference(drsSwitchPref);
@@ -543,11 +526,6 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
     private static void confirmEnablingADBON() {
         DialogFragment newFragment = new EnableADBONDialog();
         newFragment.show(mFragmentManager, "adb");
-    }
-
-    private static void confirmRebootChange() {
-        DialogFragment newFragment = new confirmRebootChangeDialog();
-        newFragment.show(mFragmentManager, "8mp");
     }
 
     protected static void updateDispCalPreference(int newDispCal) {

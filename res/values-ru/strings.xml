@@ -10,8 +10,6 @@
   <string name="pref_title_dispcal_switch">Калибровка баланса белого</string>
   <string name="pref_title_adbonswitch">Отладка по сети</string>
   <string name="error_connect_to_wifi">Ошибка: Вы должны быть подключены к Сети!</string>
-  <string name="pref_description_8mp">Используйте разрешение 8Мп для более высокого FPS и более лучшего качества фото в ночном режиме. Отключите для использования разрешения 23Мп.</string>
-  <string name="pref_title_8mp">Включить разрешение 8Мп</string>
   <string name="pref_title_alt_act">Использовать альтернативный датчик</string>
   <string name="pref_description_alt_act">На некоторых планшетах установлен другой датчик, измените эту настройку, если у вас есть проблемы.</string>
   <string name="dialog_reboot_required">Требуется перезагрузка</string>

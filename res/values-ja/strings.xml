@@ -8,8 +8,6 @@
     <string name="pref_description_drsdialog">解像度の変更には UI の再起動が必要です。\n\n続行しますか？</string>
     <string name="pref_title_dynres_switch">解像度の変更</string>
     <string name="error_connect_to_wifi">エラー: Wi\u2011Fi に接続してください！</string>
-    <string name="pref_description_8mp">FPS と夜景モードでの画質を改善するためカメラで 8MP モードを使うようにします。23MP モードを使いたい場合は無効化してください</string>
-    <string name="pref_title_8mp">8MP モードの有効化</string>
     <string name="pref_title_alt_act">別のアクチュエータを使用する</string>
     <string name="pref_description_alt_act">一部のタブレットでは通常と異なるアクチュエータを使用しています。問題が発生したらこの設定を変更してください</string>
     <string name="dialog_reboot_required">再起動してください</string>

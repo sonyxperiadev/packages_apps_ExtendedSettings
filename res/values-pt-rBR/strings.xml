@@ -7,8 +7,6 @@
   <string name="pref_description_adbonswitchdialog">ADVERTÊNCIA: Quando o ADB através da rede está ativado, o seu telefone está aberto para intrusões em todas as redes ligadas!\n\nApenas use esta funcionalidade quando estiver ligado a redes conhecidas e seguras.\n\nDeseja realmente ativar esta função?</string>
   <string name="pref_title_adbonswitch">ADB em rede</string>
   <string name="error_connect_to_wifi">Erro: Você precisa estar conectado a um WiFi!</string>
-  <string name="pref_description_8mp">Use o modo de câmera de 8MP para FPS superior e melhor qualidade de imagem no modo de noite. Desativar para usar o modo 23MP.</string>
-  <string name="pref_title_8mp">Ativar o modo 8MP</string>
   <string name="pref_title_alt_act">Use um atuador alternativo</string>
   <string name="pref_description_alt_act">Em alguns dispositivos, temos um atuador diferente, altere essas configurações se tiver problemas.</string>
   <string name="dialog_reboot_required">Reinicialização necessária</string>
