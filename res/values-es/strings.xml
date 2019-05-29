@@ -9,8 +9,6 @@
     <string name="pref_title_dynres_switch">Cambio de Resolución Dinámico</string>
     <string name="pref_title_dispcal_switch">Calibración del punto blanco de la pantalla</string>
     <string name="error_connect_to_wifi">Error: ¡Debe estar conectado a una red Wi-Fi!</string>
-    <string name="pref_title_alt_act">Usar el actuador alternativo</string>
-    <string name="pref_description_alt_act">En algunas tabletas tenemos actuadores diferentes, cambie esta configuración si está sufriendo problemas.</string>
     <string name="dialog_reboot_required">Reinicio necesario</string>
     <string name="dialog_reboot_required_summary">¡Es necesario reiniciar para que los cambios surtan efecto!</string>
     <string name="reboot_now">Reiniciar ahora</string>
