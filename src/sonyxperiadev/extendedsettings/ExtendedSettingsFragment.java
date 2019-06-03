@@ -199,8 +199,8 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
                     }
                     break;
                 case mGloveModeSwitchPref:
-                    onGloveModePreferenceChanged((Boolean)value);
-                    break;
+                    // This function decides whether to update the state of the preference:
+                    return onGloveModePreferenceChanged((Boolean)value);
                 default:
                     break;
             }
@@ -573,7 +573,7 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
         }
     }
 
-    void onGloveModePreferenceChanged(boolean enabled) {
+    private boolean onGloveModePreferenceChanged(boolean enabled) {
         final int message_text_id = enabled ? R.string.dialog_enable_glove_mode : R.string.dialog_disable_glove_mode;
         final SwitchPreference gloveModePref = (SwitchPreference) findPreference(mGloveModeSwitchPref);
 
@@ -581,21 +581,24 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
         builder.setMessage(message_text_id)
             .setTitle(R.string.warning)
             .setPositiveButton(android.R.string.ok, (DialogInterface dialog, int id) -> {
-                // Enable SHOW_TOUCHES to make the user aware of this
-                // feature being enabled.
-                Settings.System.putInt(getContext().getContentResolver(), Settings.System.SHOW_TOUCHES, enabled ? 1 : 0);
+                if (performGloveMode(enabled)) {
+                    // Enable SHOW_TOUCHES to make the user aware of this
+                    // feature being enabled.
+                    Settings.System.putInt(getContext().getContentResolver(), Settings.System.SHOW_TOUCHES, enabled ? 1 : 0);
 
-                performGloveMode(enabled);
+                    gloveModePref.setChecked(enabled);
+                }
             })
-
-            // Restore switch and underlying preference:
-            .setNegativeButton(android.R.string.cancel, (DialogInterface dialog, int id) -> gloveModePref.setChecked(!enabled))
-            .setOnCancelListener((DialogInterface dialog) -> gloveModePref.setChecked(!enabled))
-
+            // Show cancel button:
+            .setNegativeButton(android.R.string.cancel, null)
             .show();
+
+        // Never update the preference; the handler above will do so when
+        // the user agrees and there are no errors applying it.
+        return false;
     }
 
-    static void performGloveMode(boolean enabled) {
+    static boolean performGloveMode(boolean enabled) {
         for (String glovePath : SYSFS_GLOVE_MODE_PATHS) {
             try (FileWriter sysfsFile = new FileWriter(String.format(SYSFS_TOUCH_GLOVE_MODE, glovePath));
                     BufferedWriter writer = new BufferedWriter(sysfsFile)) {
@@ -605,12 +608,14 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
                 final String enabledString = enabled ? "1" : "0";
 
                 writer.write(enabledString + '\n');
+                return true;
             } catch (FileNotFoundException ignored) {
                 // Ignored: Try next file
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+        return false;
     }
 
     static boolean isGloveModeEnabled() {
