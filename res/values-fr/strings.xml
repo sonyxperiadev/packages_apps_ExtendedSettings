@@ -9,10 +9,15 @@
     <string name="pref_title_dynres_switch">Changeur de résolution</string>
     <string name="pref_title_dispcal_switch">Calibration de la couleur d\'écran</string>
     <string name="error_connect_to_wifi">Une connection à un réseau WiFi est nécessaire !</string>
+    <string name="pref_title_glove_mode_switch">Mode Gants</string>
+    <string name="pref_title_glove_mode_switch_summary">Rends l'écran tactile plus sensible</string>
     <string name="dialog_reboot_required">Redémarrage requis</string>
     <string name="dialog_reboot_required_summary">Un redémmarage est nécessaire pour prendre en compte les changements !</string>
+    <string name="dialog_enable_glove_mode">Le mode gants peut avoir un impact négatif sur la précision de l'écran tactile. <i>Afficher éléments sélectionnés</i> sera activé pour confirmer l'activation du mode gant. Cette option peut être désactivée dans les <i>Options pour les développeurs</i>.</string>
+    <string name="dialog_disable_glove_mode">Désactiver le mode gant désactivera aussi l'option <i>Afficher éléments sélectionnés</i> des options développeur.</string>
     <string name="reboot_now">Redémarrer imédiatement</string>
     <string name="reboot_later">Redémarrer plus tard</string>
     <string name="enable">Confirmer</string>
     <string name="cancel">Annuler</string>
+    <string name="warning">Attention</string>
 </resources>
