@@ -1,9 +1,11 @@
 package sonyxperiadev.extendedsettings;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.wifi.WifiManager;
@@ -11,6 +13,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemProperties;
 import android.os.UserManager;
+import android.provider.Settings;
 import android.support.v14.preference.PreferenceFragment;
 import android.support.v14.preference.SwitchPreference;
 import android.support.v7.preference.ListPreference;
@@ -27,6 +30,8 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.File;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -51,22 +56,24 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
 
     private static final String TAG = "ExtendedSettings";
 
-    protected static final String SYSFS_FB_MODES = "/sys/devices/virtual/graphics/fb0/modes";
-    protected static final String SYSFS_FB_MODESET = "/sys/devices/virtual/graphics/fb0/mode";
-    protected static final String[] SYSFS_DISPLAY_FOLDERS = new String[]{ "mdss_dsi_panel", "dsi_panel_driver" };
-    protected static final String SYSFS_PCC_PROFILE = "/sys/devices/%s/pcc_profile";
+    private static final String SYSFS_FB_MODES = "/sys/devices/virtual/graphics/fb0/modes";
+    private static final String SYSFS_FB_MODESET = "/sys/devices/virtual/graphics/fb0/mode";
+    private static final String[] SYSFS_DISPLAY_FOLDERS = new String[]{ "mdss_dsi_panel", "dsi_panel_driver" };
+    private static final String SYSFS_PCC_PROFILE = "/sys/devices/%s/pcc_profile";
+    private static final String[] SYSFS_GLOVE_MODE_PATHS = new String[]{ "lge_touch/glove_mode", "clearpad/glove" };
+    private static final String SYSFS_TOUCH_GLOVE_MODE = "/sys/devices/virtual/input/%s";
 
-    protected static final String PREF_DISPCAL_SETTING = "persist.vendor.dispcal.setting";
-    protected static final String PREF_ADB_NETWORK_COM = "vendor.adb.network.port.es";
+    static final String PREF_ADB_NETWORK_COM = "vendor.adb.network.port.es";
     private static final String PREF_ADB_NETWORK_READ = "service.adb.tcp.port";
-    protected static final String mADBOverNetworkSwitchPref = "adbon_switch";
-    protected static final String mDynamicResolutionSwitchPref = "dynres_list_switch";
-    protected static final String mDispCalSwitchPref = "dispcal_list_switch";
+    private static final String mADBOverNetworkSwitchPref = "adbon_switch";
+    private static final String mDynamicResolutionSwitchPref = "dynres_list_switch";
+    static final String mDispCalSwitchPref = "dispcal_list_switch";
+    static final String mGloveModeSwitchPref = "glove_mode_switch";
 
     private static final int BUILT_IN_DISPLAY_ID_MAIN = 0;
 
     private static FragmentManager mFragmentManager;
-    protected static PreferenceFragment mFragment;
+    static PreferenceFragment mFragment;
     private SharedPreferences.Editor mPrefEditor;
     private UserManager mUserManager;
 
@@ -88,18 +95,7 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
         }
 
         public static String getElementName(dispCal elm) {
-            switch (elm) {
-                case PANEL_CALIB_6000K:
-                    return "6000K";
-                case PANEL_CALIB_F6:
-                    return "F6: 4150K";
-                case PANEL_CALIB_D50:
-                    return "D50: 5000K";
-                case PANEL_CALIB_D65:
-                    return "D65: 6500K";
-                default:
-                    return "ERROR: UNKNOWN";
-            }
+            return getElementName(elm.val);
         }
 
         public static String getElementName(int elm) {
@@ -180,7 +176,7 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
      */
-    private static Preference.OnPreferenceChangeListener mPreferenceListener = new Preference.OnPreferenceChangeListener() {
+    private Preference.OnPreferenceChangeListener mPreferenceListener = new Preference.OnPreferenceChangeListener() {
         @Override
         public boolean onPreferenceChange(Preference preference, Object value) {
             switch (preference.getKey()) {
@@ -199,10 +195,12 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
                     int newDispCal = Integer.parseInt((String) value);
                     boolean performed = performDisplayCalibration(newDispCal);
                     if (performed) {
-                        SystemProperties.set(PREF_DISPCAL_SETTING, (String) value);
                         updateDispCalPreference(newDispCal);
                     }
                     break;
+                case mGloveModeSwitchPref:
+                    // This function decides whether to update the state of the preference:
+                    return onGloveModePreferenceChanged((Boolean)value);
                 default:
                     break;
             }
@@ -234,6 +232,13 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
             dispCalSwitchPref.setOnPreferenceChangeListener(mPreferenceListener);
         } else {
             getPreferenceScreen().removePreference(dispCalSwitchPref);
+        }
+
+        final SwitchPreference gloveModeSwitchPref = (SwitchPreference) findPreference(mGloveModeSwitchPref);
+        if (hasGloveMode()) {
+            gloveModeSwitchPref.setOnPreferenceChangeListener(mPreferenceListener);
+        } else {
+            getPreferenceScreen().removePreference(gloveModeSwitchPref);
         }
 
         mUserManager = mFragment.getContext().getSystemService(UserManager.class);
@@ -458,21 +463,16 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
     }
 
     protected int initializeDispCalListPreference(ListPreference resPref) {
-        String curDispCal;
-        int i;
-
         for (String displayFolder : SYSFS_DISPLAY_FOLDERS) {
             try (FileReader sysfsFile = new FileReader(String.format(SYSFS_PCC_PROFILE, displayFolder));
                  BufferedReader fileReader = new BufferedReader(sysfsFile)) {
-                curDispCal = fileReader.readLine();
-
-                if (curDispCal == null) {
-                    curDispCal = new String("Unavailable");
-                }
+                // "Current" sysfs value is not persisted and will be 0 after a reboot.
+                // The file is only checked to make sure pcc profile selection is available.
+                // final String curDispCal = fileReader.readLine();
 
                 CharSequence[] entries = new CharSequence[dispCal.lastElement()];
                 CharSequence[] entryValues = new CharSequence[dispCal.lastElement()];
-                for (i = 0; i < dispCal.lastElement(); i++) {
+                for (int i = 0; i < dispCal.lastElement(); i++) {
                     entries[i] = dispCal.getElementName(i);
                     entryValues[i] = Integer.toString(i);
                 }
@@ -480,9 +480,8 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
                 resPref.setEntries(entries);
                 resPref.setEntryValues(entryValues);
 
-                resPref.setDefaultValue(dispCal.getElementName(Integer.parseInt(curDispCal)));
-                resPref.setValueIndex(Integer.parseInt(curDispCal));
-
+                // Retrieve current value from persisted storage:
+                final String curDispCal = resPref.getValue();
                 resPref.setSummary(dispCal.getElementName(Integer.parseInt(curDispCal)));
 
                 return 0;
@@ -572,6 +571,75 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
             // Set the switch state accordingly to the Preference
             mAdbOverNetwork.setChecked(false);
         }
+    }
+
+    private boolean onGloveModePreferenceChanged(boolean enabled) {
+        final int message_text_id = enabled ? R.string.dialog_enable_glove_mode : R.string.dialog_disable_glove_mode;
+        final SwitchPreference gloveModePref = (SwitchPreference) findPreference(mGloveModeSwitchPref);
+
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(message_text_id)
+            .setTitle(R.string.warning)
+            .setPositiveButton(android.R.string.ok, (DialogInterface dialog, int id) -> {
+                if (performGloveMode(enabled)) {
+                    // Enable SHOW_TOUCHES to make the user aware of this
+                    // feature being enabled.
+                    Settings.System.putInt(getContext().getContentResolver(), Settings.System.SHOW_TOUCHES, enabled ? 1 : 0);
+
+                    gloveModePref.setChecked(enabled);
+                }
+            })
+            // Show cancel button:
+            .setNegativeButton(android.R.string.cancel, null)
+            .show();
+
+        // Never update the preference; the handler above will do so when
+        // the user agrees and there are no errors applying it.
+        return false;
+    }
+
+    static boolean performGloveMode(boolean enabled) {
+        for (String glovePath : SYSFS_GLOVE_MODE_PATHS) {
+            try (FileWriter sysfsFile = new FileWriter(String.format(SYSFS_TOUCH_GLOVE_MODE, glovePath));
+                    BufferedWriter writer = new BufferedWriter(sysfsFile)) {
+
+                Log.i(TAG, "Setting glove mode to " + enabled);
+
+                final String enabledString = enabled ? "1" : "0";
+
+                writer.write(enabledString + '\n');
+                return true;
+            } catch (FileNotFoundException ignored) {
+                // Ignored: Try next file
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    static boolean isGloveModeEnabled() {
+        for (String glovePath : SYSFS_GLOVE_MODE_PATHS) {
+            try (FileReader sysfsFile = new FileReader(String.format(SYSFS_TOUCH_GLOVE_MODE, glovePath));
+                    BufferedReader fileReader = new BufferedReader(sysfsFile)) {
+                final String line = fileReader.readLine();
+                return "1".equals(line);
+            } catch (FileNotFoundException ignored) {
+                // Ignored: Try next file
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    private static boolean hasGloveMode() {
+        for (String glovePath : SYSFS_GLOVE_MODE_PATHS) {
+            final File sysfsFile = new File(String.format(SYSFS_TOUCH_GLOVE_MODE, glovePath));
+            if (sysfsFile.isFile())
+                return true;
+        }
+        return false;
     }
 
     private static boolean isNumeric(String str) {

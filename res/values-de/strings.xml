@@ -8,11 +8,15 @@
     <string name="pref_description_drsdialog">Dynamic Resolution Switch muss die UI neustarten.\n\nMöchten sie fortfahren?</string>
     <string name="pref_title_dynres_switch">Dynamic Resolution Switch</string>
     <string name="error_connect_to_wifi">Error: W-LAN muss aktiviert sein!</string>
+    <string name="pref_title_glove_mode_switch">Handschuhmodus</string>
+    <string name="pref_title_glove_mode_switch_summary">Empfindlichkeit des Touchscreens erhöhen</string>
     <string name="dialog_reboot_required">Neustart erforderlich</string>
     <string name="dialog_reboot_required_summary">Ein Neustart ist erforderlich, um die Änderungen anzuwenden!</string>
+    <string name="dialog_enable_glove_mode">Handschuhmodus kann die Eingabegenauigkeit verschlechtern. <i>Fingertipps anzeigen</i> wird aktiviert werden, um auf den Status dieses Features hinzuweisen. Sie können es manuell in den <i>Entwickleroptionen</i> abschalten.</string>
+    <string name="dialog_disable_glove_mode">Abschalten vom Handschuhmodus deaktiviert auch die <i>Fingertipps anzeigen</i> Entwickleroption</string>
     <string name="reboot_now">Jetzt Neustarten</string>
     <string name="reboot_later">Später Neustarten</string>
     <string name="enable">Aktivieren</string>
     <string name="cancel">Abbrechen</string>
-
+    <string name="warning">Warnung</string>
 </resources>
