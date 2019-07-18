@@ -9,11 +9,16 @@
     <string name="pref_title_dynres_switch">显示设置</string>
     <string name="pref_title_dispcal_switch">白平衡设置</string>
     <string name="error_connect_to_wifi">错误: 您需要连接到WiFi！</string>
+    <string name="pref_title_glove_mode_switch">手套模式</string>
+    <string name="pref_title_glove_mode_switch_summary">增加触摸灵敏度</string>
     <string name="dialog_reboot_required">需要重启</string>
     <string name="dialog_reboot_required_summary">设备需要重启以使更改生效！</string>
+    <string name="dialog_enable_glove_mode">手套模式可能会造成误触！ <i>小圆点</i> 将会出现以提示手套模式已开启。 你可以在 <i>开发者选项</i>中手动关闭小圆点。</string>
+    <string name="dialog_disable_glove_mode">禁用手套模式后 <i>小圆点</i> 将会从开发者选项中移除。</string>
     <string name="reboot_now">立即重启</string>
     <string name="reboot_later">稍后重启</string>
     <string name="enable">确定</string>
     <string name="cancel">取消</string>
+    <string name="warning">警告</string>
 
 </resources>
