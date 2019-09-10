@@ -70,7 +70,7 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
     static final String mDispCalSwitchPref = "dispcal_list_switch";
     static final String mGloveModeSwitchPref = "glove_mode_switch";
 
-    private static final int BUILT_IN_DISPLAY_ID_MAIN = 0;
+    private static final long BUILT_IN_DISPLAY_ID_MAIN = SurfaceControl.getPhysicalDisplayIds()[0];
 
     private static FragmentManager mFragmentManager;
     static PreferenceFragment mFragment;
@@ -278,7 +278,7 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
      *       Use only when the HWC2 implementation will be complete.
      */
     protected static String getAvailableResolutions(int dispId) {
-        IBinder dispHandle = SurfaceControl.getBuiltInDisplay(dispId);
+        IBinder dispHandle = SurfaceControl.getPhysicalDisplayToken(dispId);
         SurfaceControl.PhysicalDisplayInfo[] displayCfgs =
                 SurfaceControl.getDisplayConfigs(dispHandle);
         int currentCfgNo = SurfaceControl.getActiveConfig(dispHandle);
@@ -417,7 +417,7 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
     }
 
     protected static void performDRS(int resId) {
-        IBinder displayHandle = SurfaceControl.getBuiltInDisplay(BUILT_IN_DISPLAY_ID_MAIN);
+        IBinder displayHandle = SurfaceControl.getPhysicalDisplayToken(BUILT_IN_DISPLAY_ID_MAIN);
         int width, height;
 
         Log.e(TAG, "Performing DRS for mode " + resId);
