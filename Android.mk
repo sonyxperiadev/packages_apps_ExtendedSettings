@@ -7,9 +7,12 @@ LOCAL_SRC_FILES := $(call all-java-files-under, src)
 
 LOCAL_PACKAGE_NAME := ExtendedSettings
 LOCAL_CERTIFICATE := platform
-LOCAL_PRIVATE_PLATFORM_APIS := true
 LOCAL_PRIVILEGED_MODULE := true
 LOCAL_PROPRIETARY_MODULE := true
+
+ifeq (1,$(filter 1,$(shell echo "$$(( $(PLATFORM_SDK_VERSION) >= 28 ))" )))
+    LOCAL_PRIVATE_PLATFORM_APIS := true
+endif
 
 LOCAL_USE_AAPT2 := true
 
