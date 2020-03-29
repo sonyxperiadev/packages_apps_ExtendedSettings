@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Rozšírené nastavenia</string>
+
+    <!-- Strings related to Settings -->
+    <string name="cancel">Zrušiť</string>
+    <string name="dialog_disable_glove_mode">Zakázanie režimu rukavíc zakáže aj <i>Zobrazovať klepnutia</i> v časti pre vývojárov.</string>
+    <string name="dialog_enable_glove_mode">Režim rukavíc môže mať negatívny vplyv na presnosť vstupu. Možnosť <i>Zobrazovať klepnutia</i> bude povolená, aby ste mali prehľad o povolení tejto funkcie. Dá sa zakázať manuálne v časti <i>Pre vývojárov</i>.</string>
+    <string name="dialog_reboot_required">Vyžaduje sa reštartovanie</string>
+    <string name="dialog_reboot_required_summary">Zmeny sa prejavia až po reštarte!</string>
+    <string name="enable">Aktivovať</string>
+    <string name="error_connect_to_wifi">Chyba: Musíte byť pripojení k sieti Wi-Fi!</string>
+    <string name="pref_description_adbonswitch">Povolť ladenie TCP / IP cez sieťové rozhrania (Wi‑Fi, USB siete). Toto nastavenie sa pri reštarte resetuje.</string>
+    <string name="pref_description_adbonswitchdialog">"VAROVANIE: Keď je povolené ADB cez sieť, váš telefón je zraniteľný na všetkých pripojených sieťach! Túto funkciu používajte, iba ak ste pripojení k dôveryhodným sieťam. Naozaj chcete túto funkciu povoliť?"</string>
+    <string name="pref_description_drsdialog">"Prepínač dynamického rozlíšenia musí reštartovať používateľské rozhranie. Chcete pokračovať?"</string>
+    <string name="pref_title_adbonswitch">ADB cez sieť</string>
+    <string name="pref_title_dispcal_switch">Zobraziť kalibráciu bieleho bodu</string>
+    <string name="pref_title_dynres_switch">Prepínač dynamického rozlíšenia</string>
+    <string name="pref_title_glove_mode_switch">Režim v rukaviciach</string>
+    <string name="pref_title_glove_mode_switch_summary">Zvýšenie citlivosti dotykovej obrazovky</string>
+    <string name="reboot_later">Reštartovať neskôr</string>
+    <string name="reboot_now">Reštartovať teraz</string>
+    <string name="warning">Upozornenie</string>
+</resources>
