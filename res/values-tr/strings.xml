@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Ekstra Ayarlar</string>
+
+    <!-- Strings related to Settings -->
+    <string name="pref_description_adbonswitch">Ağ (WiFi, USB ağ paylaşımı, WiFi Hotspot) üzerinden TCP/IP hata ayıklamayı açar. Bu ayar telefon yeniden başlatıldığı zaman sıfırlanır.</string>
+    <string name="pref_description_adbonswitchdialog">UYARI: Ağ üzerinden ADB açık iken telefonunuz bağlı olduğunuz ağlarda saldırılara karşı açık olabilir!\n\nBu özelliği sadece güvendiğiniz ağlar üzerinde kullanın.\nBu özelliği gerçekten etkinleştirmek istiyor musunuz?</string>
+    <string name="pref_title_adbonswitch">Ağ üzerinden ADB</string>
+    <string name="pref_description_drsdialog">Dinamik Çözünürlük ayarını etkinleştirmek için arayüz yeniden başlatılacak.\n\nDevam etmek istiyor musunuz?</string>
+    <string name="pref_title_dynres_switch">Dinamik Çözünürlük Ayarı</string>
+    <string name="pref_title_dispcal_switch">Beyaz Nokta Kalibrasyonu</string>
+    <string name="error_connect_to_wifi">Hata: Bir WiFi ağına bağlı olmanız gerekiyor!</string>
+    <string name="pref_title_glove_mode_switch">Eldiven modu</string>
+    <string name="pref_title_glove_mode_switch_summary">Dokunmatik hassasiyetini artırır</string>
+    <string name="dialog_reboot_required">Yeniden başlatma gerekiyor</string>
+    <string name="dialog_reboot_required_summary">Değişikliklerin uygulanması için cihazın yeniden başlatılması gerekiyor!</string>   
+    <string name="dialog_enable_glove_mode">Eldiven modu dokunmaların doğruluğunu azaltabilir. <i>Dokunmayı göster</i> ayarı eldiven modunun açık olup olmadığından haberdar olmanız için etkinleştirilecek. <i>Geliştirici seçenekleri</i> menüsünden devre dışı bırakabilirsiniz.</string>
+    <string name="dialog_disable_glove_mode">Eldiven modunu kapatmak Geliştirici seçenekleri\'ndeki <i>Dokunmayı göster</i> ayarını kapatır.</string>
+    <string name="reboot_now">Şimdi yeniden başlat</string>
+    <string name="reboot_later">Daha sonra yeniden başlat</string>
+    <string name="enable">Etkinleştir</string>
+    <string name="cancel">İptal</string>
+    <string name="warning">Uyarı</string>
+</resources>
