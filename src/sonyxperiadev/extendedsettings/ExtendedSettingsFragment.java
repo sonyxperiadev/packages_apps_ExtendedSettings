@@ -27,15 +27,18 @@ import android.view.SurfaceControl;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.File;
 import java.math.BigInteger;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.ByteOrder;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -539,33 +542,53 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
         SwitchPreference mAdbOverNetwork = (SwitchPreference) ExtendedSettingsFragment.mFragment.findPreference(mADBOverNetworkSwitchPref);
 
         if (enabled) {
-            WifiManager wifiManager = mFragment.getContext().getSystemService(WifiManager.class);
-            int ipAddress = wifiManager.getConnectionInfo().getIpAddress();
+            // WifiManager wifiManager = mFragment.getContext().getSystemService(WifiManager.class);
+            // int ipAddress = wifiManager.getConnectionInfo().getIpAddress();
 
-            // Convert little-endian to big-endianif needed
-            if (ByteOrder.nativeOrder().equals(ByteOrder.LITTLE_ENDIAN)) {
-                ipAddress = Integer.reverseBytes(ipAddress);
-            }
+            // // Convert little-endian to big-endianif needed
+            // if (ByteOrder.nativeOrder().equals(ByteOrder.LITTLE_ENDIAN)) {
+            //     ipAddress = Integer.reverseBytes(ipAddress);
+            // }
 
-            byte[] ipByteArray = BigInteger.valueOf(ipAddress).toByteArray();
+            // byte[] ipByteArray = BigInteger.valueOf(ipAddress).toByteArray();
 
-            String ipAddressString;
+            // String ipAddressString;
+            // try {
+            //     ipAddressString = InetAddress.getByAddress(ipByteArray).getHostAddress();
+            // } catch (UnknownHostException ex) {
+            //     Log.e("WIFIIP", "Unable to get host address.");
+            //     ipAddressString = null;
+            // }
+            // if (ipAddressString != null) {
+            //     mAdbOverNetwork.setSummary(ipAddressString + ":" + SystemProperties.getInt(PREF_ADB_NETWORK_READ, 0));
+            //     // Set the switch state accordingly to the Preference
+            //     mAdbOverNetwork.setChecked(true);
+            // } else {
+            //     // https://stackoverflow.com/questions/17302220/android-get-ip-address-of-a-hotspot-providing-device
+            //     // mAdbOverNetwork.setSummary(R.string.error_connect_to_wifi);
+            //     mAdbOverNetwork.setSummary("Unable to deduce ip address, you may not be able to connect");
+            //     // Set the switch state accordingly to the Preference
+            //     mAdbOverNetwork.setChecked(true);
+            // }
+
+            int port = SystemProperties.getInt(PREF_ADB_NETWORK_READ, 0);
+
+            StringBuilder ip = new StringBuilder();
             try {
-                ipAddressString = InetAddress.getByAddress(ipByteArray).getHostAddress();
-            } catch (UnknownHostException ex) {
-                Log.e("WIFIIP", "Unable to get host address.");
-                ipAddressString = null;
+                for (NetworkInterface ni : Collections.list(NetworkInterface.getNetworkInterfaces())) {
+                    for (InetAddress addr : Collections.list(ni.getInetAddresses())) {
+                        // if (addr.isSiteLocalAddress()) {
+                        ip.append(addr.getHostAddress()).append(':').append(port).append('\n');
+                        // }
+                    }
+                }
+
+            } catch (SocketException e) {
+                Log.e("WIFIIP", "Unable to get host address.", e);
             }
-            if (ipAddressString != null) {
-                mAdbOverNetwork.setSummary(ipAddressString + ":" + SystemProperties.getInt(PREF_ADB_NETWORK_READ, 0));
-                // Set the switch state accordingly to the Preference
-                mAdbOverNetwork.setChecked(true);
-            } else {
-                mAdbOverNetwork.setSummary(R.string.error_connect_to_wifi);
-                SystemProperties.set(PREF_ADB_NETWORK_COM, "-1");
-                // Set the switch state accordingly to the Preference
-                mAdbOverNetwork.setChecked(false);
-            }
+            mAdbOverNetwork.setSummary(ip);
+            // Set the switch state accordingly to the Preference
+            mAdbOverNetwork.setChecked(true);
         } else {
             mAdbOverNetwork.setSummary(R.string.pref_description_adbonswitch);
             // Set the switch state accordingly to the Preference
