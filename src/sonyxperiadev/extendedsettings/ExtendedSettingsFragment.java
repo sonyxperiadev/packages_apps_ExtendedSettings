@@ -72,6 +72,8 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
 
     private static final long BUILT_IN_DISPLAY_ID_MAIN = SurfaceControl.getPhysicalDisplayIds()[0];
 
+    private static native boolean nativeSetActiveConfig(IBinder displayToken, int id);
+
     private static FragmentManager mFragmentManager;
     static PreferenceFragment mFragment;
     private SharedPreferences.Editor mPrefEditor;
@@ -416,6 +418,16 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
         }
     }
 
+    /**
+     * @hide
+     */
+    public static boolean setActiveConfig(IBinder displayToken, int id) {
+        if (displayToken == null) {
+            throw new IllegalArgumentException("displayToken must not be null");
+        }
+        return nativeSetActiveConfig(displayToken, id);
+    }
+
     protected static void performDRS(int resId) {
         IBinder displayHandle = SurfaceControl.getPhysicalDisplayToken(BUILT_IN_DISPLAY_ID_MAIN);
         int width, height;
@@ -444,14 +456,14 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
         /* This is an hack for incomplete HWC2 implementation */
         if ((resId == curMode) && (resId < 1)) {
             SurfaceControl.openTransaction();
-            SurfaceControl.setActiveConfig(displayHandle, curMode + 1);
+            setActiveConfig(displayHandle, curMode + 1);
             SurfaceControl.closeTransaction();
         }
         /* END */
 
         SurfaceControl.openTransaction();
 
-        SurfaceControl.setActiveConfig(displayHandle, resId);
+        setActiveConfig(displayHandle, resId);
         SurfaceControl.setDisplaySize(displayHandle, width, height);
 
         SurfaceControl.closeTransaction();
