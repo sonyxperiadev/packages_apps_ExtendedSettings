@@ -281,15 +281,15 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
      */
     protected static String getAvailableResolutions(int dispId) {
         IBinder dispHandle = SurfaceControl.getPhysicalDisplayToken(dispId);
-        SurfaceControl.PhysicalDisplayInfo[] displayCfgs =
+        SurfaceControl.DisplayConfig[] displayCfgs =
                 SurfaceControl.getDisplayConfigs(dispHandle);
         int currentCfgNo = SurfaceControl.getActiveConfig(dispHandle);
         String ret;
 
-        SurfaceControl.PhysicalDisplayInfo currentCfg = displayCfgs[currentCfgNo];
+        SurfaceControl.DisplayConfig currentCfg = displayCfgs[currentCfgNo];
         Log.d(TAG, "Current resolution: " + currentCfg.width + "x" +
                     currentCfg.height + " @ " + currentCfg.refreshRate +
-                    "hz, " + currentCfg.density + "DPI");
+                    "hz, ");
         ret = currentCfg.width + "x" + currentCfg.height + "@" +
                 currentCfg.refreshRate + "hz";
         return ret;
@@ -447,7 +447,7 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
         }
 
         int curMode = SurfaceControl.getActiveConfig(displayHandle);
-        SurfaceControl.PhysicalDisplayInfo[] displayCfgs =
+        SurfaceControl.DisplayConfig[] displayCfgs =
                 SurfaceControl.getDisplayConfigs(displayHandle);
 
         width = displayCfgs[resId].width;
