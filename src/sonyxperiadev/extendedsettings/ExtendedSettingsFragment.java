@@ -72,8 +72,6 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
 
     private static final long BUILT_IN_DISPLAY_ID_MAIN = SurfaceControl.getPhysicalDisplayIds()[0];
 
-    private static native boolean nativeSetActiveConfig(IBinder displayToken, int id);
-
     private static FragmentManager mFragmentManager;
     static PreferenceFragment mFragment;
     private SharedPreferences.Editor mPrefEditor;
@@ -280,18 +278,11 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
      *       Use only when the HWC2 implementation will be complete.
      */
     protected static String getAvailableResolutions(int dispId) {
-        IBinder dispHandle = SurfaceControl.getPhysicalDisplayToken(dispId);
-        SurfaceControl.DisplayConfig[] displayCfgs =
-                SurfaceControl.getDisplayConfigs(dispHandle);
-        int currentCfgNo = SurfaceControl.getActiveConfig(dispHandle);
-        String ret;
-
-        SurfaceControl.DisplayConfig currentCfg = displayCfgs[currentCfgNo];
-        Log.d(TAG, "Current resolution: " + currentCfg.width + "x" +
-                    currentCfg.height + " @ " + currentCfg.refreshRate +
-                    "hz, ");
-        ret = currentCfg.width + "x" + currentCfg.height + "@" +
-                currentCfg.refreshRate + "hz";
+        IBinder displayHandle = SurfaceControl.getPhysicalDisplayToken(dispId);
+        SurfaceControl.DynamicDisplayInfo displayInfo = SurfaceControl.getDynamicDisplayInfo(displayHandle);
+        SurfaceControl.DisplayMode currentCfg = displayInfo.supportedDisplayModes[displayInfo.activeDisplayModeId];
+        String ret = currentCfg.width + "x" + currentCfg.height + "@" + currentCfg.refreshRate + "hz";
+        Log.d(TAG, "Current resolution: " + ret);
         return ret;
     }
 
@@ -418,16 +409,6 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
         }
     }
 
-    /**
-     * @hide
-     */
-    public static boolean setActiveConfig(IBinder displayToken, int id) {
-        if (displayToken == null) {
-            throw new IllegalArgumentException("displayToken must not be null");
-        }
-        return nativeSetActiveConfig(displayToken, id);
-    }
-
     protected static void performDRS(int resId) {
         IBinder displayHandle = SurfaceControl.getPhysicalDisplayToken(BUILT_IN_DISPLAY_ID_MAIN);
         int width, height;
@@ -446,24 +427,27 @@ public class ExtendedSettingsFragment extends PreferenceFragment {
             return;
         }
 
-        int curMode = SurfaceControl.getActiveConfig(displayHandle);
-        SurfaceControl.DisplayConfig[] displayCfgs =
-                SurfaceControl.getDisplayConfigs(displayHandle);
+        SurfaceControl.DynamicDisplayInfo displayInfo = SurfaceControl.getDynamicDisplayInfo(displayHandle);
 
-        width = displayCfgs[resId].width;
-        height = displayCfgs[resId].height;
+        width = displayInfo.supportedDisplayModes[displayInfo.activeDisplayModeId].width;
+        height = displayInfo.supportedDisplayModes[displayInfo.activeDisplayModeId].height;
 
         /* This is an hack for incomplete HWC2 implementation */
-        if ((resId == curMode) && (resId < 1)) {
-            SurfaceControl.openTransaction();
-            setActiveConfig(displayHandle, curMode + 1);
-            SurfaceControl.closeTransaction();
-        }
+        // if ((resId == curMode) && (resId < 1)) {
+        //     SurfaceControl.openTransaction();
+        //     // setActiveConfig(displayHandle, curMode + 1);
+        //     SurfaceControl.closeTransaction();
+        // }
         /* END */
+
+        SurfaceControl.DesiredDisplayModeSpecs specs = SurfaceControl.getDesiredDisplayModeSpecs(displayHandle);
+        // TODO: Most likely doesn't work like this, should probably only set
+        // refresh rates through this system, and the rest through setDisplaySize?
+        specs.defaultMode = resId;
 
         SurfaceControl.openTransaction();
 
-        setActiveConfig(displayHandle, resId);
+        SurfaceControl.setDesiredDisplayModeSpecs(displayHandle, specs);
         SurfaceControl.setDisplaySize(displayHandle, width, height);
 
         SurfaceControl.closeTransaction();
