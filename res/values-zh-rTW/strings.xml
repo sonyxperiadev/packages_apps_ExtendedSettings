@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">擴充設定</string>
+
+    <!-- Strings related to Settings -->
+    <string name="pref_description_adbonswitch">通過網路介面（Wi\u2011Fi、USB 網路）啟用 TCP/IP 除錯。此設定在重新啟動時重置。</string>
+    <string name="pref_description_adbonswitchdialog">警告：啟用網路 ADB 偵錯後，終端容易受到所有連線網路的入侵。\n\n請僅在連線可靠網路時使用此功能。您真的要啟用此功能嗎？</string>
+    <string name="pref_title_adbonswitch">網路 ADB 偵錯</string>
+    <string name="pref_description_drsdialog">更改螢幕解析度需要重新啟動系統使用者介面。\n\n您仍要繼續嗎？</string>
+    <string name="pref_title_dynres_switch">更改螢幕解析度</string>
+    <string name="pref_title_dispcal_switch">白平衡設定</string>
+    <string name="error_connect_to_wifi">錯誤: 您需要連線到 WiFi！</string>
+    <string name="pref_title_glove_mode_switch">手套模式</string>
+    <string name="pref_title_glove_mode_switch_summary">開啟手套模式可以增加螢幕的靈敏度</string>
+    <string name="dialog_reboot_required">需要重新啟動裝置</string>
+    <string name="dialog_reboot_required_summary">此修改需要重新啟動裝置！</string>
+    <string name="dialog_enable_glove_mode">手套模式會對觸摸精確度造成影響，開啟此功能後<i>顯示觸控回應</i>也會被啟用，您可以在<i>開發人員選項</i>中關閉它。</string>
+    <string name="dialog_disable_glove_mode">關閉手套模式也將關閉開發人員選項中的<i>顯示觸控回應</i>。</string>
+    <string name="reboot_now">立即重新啟動</string>
+    <string name="reboot_later">稍後重新啟動</string>
+    <string name="enable">啟用</string>
+    <string name="cancel">取消</string>
+    <string name="warning">警告</string>
+
+
+</resources>
