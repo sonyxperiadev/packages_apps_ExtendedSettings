@@ -6,18 +6,6 @@
         android:summary="@string/pref_description_adbonswitch"
         android:title="@string/pref_title_adbonswitch" />
 
-    <ListPreference
-        android:defaultValue="1"
-        android:key="dynres_list_switch"
-        android:title="@string/pref_title_dynres_switch"
-        android:summary="Current resolution:"/>
-
-    <ListPreference
-        android:defaultValue="0"
-        android:key="dispcal_list_switch"
-        android:title="@string/pref_title_dispcal_switch"
-        android:summary="Current calibration:"/>
-
     <SwitchPreference
         android:defaultValue="false"
         android:key="glove_mode_switch"
